@@ -7,11 +7,13 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Link, useNavigate } from "react-router-dom";
 
 const IssuesDashboard = () => {
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   // Mock data - replace with actual GitHub API calls in Tauri
   const mockIssues = [
@@ -84,14 +86,21 @@ const IssuesDashboard = () => {
     );
   }
 
+  const navigateToIssueDetail = (issue: any) => {
+    navigate(`/issues/${issue.id}`, { state: { issue } });
+  };
+
   return (
     <div className="p-4 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">GitHub Issues Dashboard</h1>
       <div className="space-y-4">
         {issues.map((issue) => (
-          <Card key={issue.id}>
+          <Card key={issue.id} className="bg-zinc-950 border-zinc-600">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle
+                className="flex items-center gap-2 cursor-pointer"
+                onClick={() => navigateToIssueDetail(issue)}
+              >
                 {issue.state === "open" ? (
                   <AlertCircle className="w-5 h-5 text-red-500" />
                 ) : (
@@ -106,24 +115,6 @@ const IssuesDashboard = () => {
             </CardHeader>
             <CardContent>
               <p className="mb-4">{issue.body}</p>
-              <div className="border-t pt-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <MessageSquare className="w-4 h-4" />
-                  <span className="font-medium">
-                    Comments ({issue.comments})
-                  </span>
-                </div>
-                <div className="space-y-2">
-                  {issue.comments_list.map((comment) => (
-                    <div key={comment.id} className="bg-gray-50 p-3 rounded-lg">
-                      <div className="font-medium text-sm mb-1">
-                        {comment.user}
-                      </div>
-                      <div className="text-sm">{comment.body}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </CardContent>
           </Card>
         ))}
