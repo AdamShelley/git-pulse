@@ -6,6 +6,7 @@ export type Issue = {
   user: string;
   created_at: string;
   comments: number;
+  tags: string[];
   comments_list: Comment[];
 };
 

@@ -5,26 +5,34 @@ import {
   AlertCircle,
   CheckCircle,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Link, useNavigate } from "react-router-dom";
+import { Issue } from "@/types/types";
 
 const IssuesDashboard = () => {
-  const [issues, setIssues] = useState([]);
+  const [issues, setIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   // Mock data - replace with actual GitHub API calls in Tauri
-  const mockIssues = [
+  const mockIssues: Issue[] = [
     {
       id: 1,
       title: "Bug in authentication flow",
-      state: "open",
+      state: "open" as "open",
       comments: 3,
       user: "johndoe",
       created_at: "2024-03-15T10:00:00Z",
       body: "Users are getting logged out randomly...",
+      tags: ["bug", "authentication"],
       comments_list: [
         { id: 1, user: "maintainer", body: "Can you provide more details?" },
         {
@@ -37,11 +45,12 @@ const IssuesDashboard = () => {
     {
       id: 2,
       title: "Feature request: Dark mode",
-      state: "closed",
+      state: "closed" as "closed",
       comments: 5,
       user: "janesmith",
       created_at: "2024-03-14T15:30:00Z",
       body: "Would be great to have dark mode support",
+      tags: ["Design"],
       comments_list: [
         {
           id: 3,
@@ -91,14 +100,14 @@ const IssuesDashboard = () => {
   };
 
   return (
-    <div className="p-4 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">GitHub Issues Dashboard</h1>
+    <div className="p-1 max-w-4xl mx-auto mt-4">
+      {/* <h1 className="text-xl font-semibold mb-4 text-center">Issues</h1> */}
       <div className="space-y-4">
         {issues.map((issue) => (
-          <Card key={issue.id} className="bg-zinc-950 border-zinc-600">
+          <Card key={issue.id} className="bg-zinc-800/30 border-zinc-700 ">
             <CardHeader>
               <CardTitle
-                className="flex items-center gap-2 cursor-pointer"
+                className="flex text-md font-medium items-center gap-2 cursor-pointer m-0"
                 onClick={() => navigateToIssueDetail(issue)}
               >
                 {issue.state === "open" ? (
@@ -113,9 +122,19 @@ const IssuesDashboard = () => {
                 {new Date(issue.created_at).toLocaleDateString()}
               </div>
             </CardHeader>
-            <CardContent>
-              <p className="mb-4">{issue.body}</p>
-            </CardContent>
+            {/* <CardContent>
+              <p className="text-sm">{issue.body}</p>
+            </CardContent> */}
+            <CardFooter className="flex gap-2">
+              {issue.tags?.map((tag, index) => (
+                <span
+                  key={index}
+                  className="px-2 py-1 text-xs rounded-sm border border-teal-700 bg-zinc-800 text-zinc-200"
+                >
+                  {tag}
+                </span>
+              ))}
+            </CardFooter>
           </Card>
         ))}
       </div>
