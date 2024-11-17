@@ -1,6 +1,7 @@
 import { Issue } from "@/types/types";
 import { AlertCircle, CheckCircle, MessageSquare } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import SaveToObsidianButton from "./components/save-to-obsidian-button";
 
 interface IssuePageProps {
   issue: Issue;
@@ -11,7 +12,7 @@ const IssuePage = () => {
   const { issue } = state as IssuePageProps;
 
   return (
-    <div className="p-1 max-w-4xl mx-auto bg-zinc-900 w-full">
+    <div className="p-1 max-w-4xl mx-auto w-full">
       <h1 className="mt-5 text-md font-medium mb-4">Issues Dashboard</h1>
       <div className="space-y-4">
         <div key={issue.id} className="">
@@ -27,6 +28,9 @@ const IssuePage = () => {
             <div className="text-sm text-gray-500">
               Opened by {issue.user} on{" "}
               {new Date(issue.created_at).toLocaleDateString()}
+            </div>
+            <div>
+              <SaveToObsidianButton issue={issue} />
             </div>
           </div>
           <div>

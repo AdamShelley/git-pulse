@@ -7,6 +7,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { GitBranch, Home, Search, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -31,13 +32,16 @@ const items = [
 
 export function AppSidebar() {
   return (
-    <Sidebar className="border-zinc-700">
+    <Sidebar className="border-zinc-700 ">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-zinc-300 text-sm">
+          <SidebarGroupLabel className="text-zinc-300 text-sm flex items-center justify-between">
             {/* TODO: Replace with real icon */}
-            <GitBranch className="w-5 h-5 mr-2" />
-            Git Pulse
+            <div className="flex ">
+              <GitBranch className="w-5 h-5 mr-2" />
+              Git Pulse
+            </div>
+            <SidebarTrigger />
           </SidebarGroupLabel>
 
           <SidebarGroupContent className="">

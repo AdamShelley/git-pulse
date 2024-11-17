@@ -41,6 +41,7 @@ const IssuesDashboard = () => {
           body: "It happens after 30 minutes of inactivity",
         },
       ],
+      html_url: "https://github.com/owner/repo/issues/1",
     },
     {
       id: 2,
@@ -51,9 +52,70 @@ const IssuesDashboard = () => {
       created_at: "2024-03-14T15:30:00Z",
       body: "Would be great to have dark mode support",
       tags: ["Design"],
+      html_url: "https://github.com/owner/repo/issues/2",
       comments_list: [
         {
           id: 3,
+          user: "maintainer",
+          body: "Good idea, we'll add it to the roadmap",
+        },
+      ],
+    },
+    {
+      id: 3,
+      title: "Performance issues",
+      state: "open" as "open",
+      comments: 2,
+      user: "johndoe",
+      created_at: "2024-03-14T10:00:00Z",
+      body: "The app is slow when loading large files",
+      tags: ["Performance"],
+      html_url: "https://github.com/owner/repo/issues/3",
+      comments_list: [
+        {
+          id: 4,
+          user: "maintainer",
+          body: "Can you provide more details?",
+        },
+        {
+          id: 5,
+          user: "johndoe",
+          body: "It happens with files larger than 1MB",
+        },
+      ],
+    },
+
+    {
+      id: 4,
+      title: "Feature request: Mobile app",
+      state: "open" as "open",
+      comments: 1,
+      user: "janes smith",
+      created_at: "2024-03-13T10:00:00Z",
+      body: "Would be great to have a mobile app",
+      html_url: "https://github.com/owner/repo/issues/4",
+      tags: ["Feature"],
+      comments_list: [
+        {
+          id: 6,
+          user: "maintainer",
+          body: "Good idea, we'll add it to the roadmap",
+        },
+      ],
+    },
+    {
+      id: 4,
+      title: "Feature request: Mobile app",
+      state: "open" as "open",
+      comments: 1,
+      user: "janes smith",
+      created_at: "2024-03-13T10:00:00Z",
+      body: "Would be great to have a mobile app",
+      html_url: "https://github.com/owner/repo/issues/5",
+      tags: ["Feature"],
+      comments_list: [
+        {
+          id: 6,
           user: "maintainer",
           body: "Good idea, we'll add it to the roadmap",
         },
@@ -104,7 +166,7 @@ const IssuesDashboard = () => {
       {/* <h1 className="text-xl font-semibold mb-4 text-center">Issues</h1> */}
       <div className="space-y-4">
         {issues.map((issue) => (
-          <Card key={issue.id} className="bg-zinc-800/30 border-zinc-700 ">
+          <Card key={issue.id} className="bg-zinc-900/20 border-zinc-700/70 ">
             <CardHeader>
               <CardTitle
                 className="flex text-md font-medium items-center gap-2 cursor-pointer m-0"

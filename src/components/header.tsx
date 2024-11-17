@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { SidebarTrigger } from "./ui/sidebar";
+import { SidebarTrigger, useSidebar } from "./ui/sidebar";
 import { useEffect, useState } from "react";
 
 type Props = {};
@@ -8,6 +8,9 @@ const Header = (props: Props) => {
   const [headerTitle, setHeaderTitle] = useState("Git Pulse");
   const location = useLocation();
   const { pathname } = location;
+  const { open } = useSidebar();
+
+  console.log(open);
 
   useEffect(() => {
     if (pathname === "/") {
@@ -19,7 +22,7 @@ const Header = (props: Props) => {
 
   return (
     <div className="w-full flex items-center">
-      <SidebarTrigger />
+      {!open && <SidebarTrigger />}
       <h1 className="text-sm font-semibold ml-2">{headerTitle}</h1>
     </div>
   );
