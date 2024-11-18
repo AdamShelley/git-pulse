@@ -13,7 +13,7 @@ const IssuePage = () => {
 
   return (
     <div className="p-1 max-w-4xl mx-auto w-full">
-      <h1 className="mt-5 text-md font-medium mb-4">Issues Dashboard</h1>
+      {/* <h1 className="mt-5 text-md font-medium mb-4">Issues Dashboard</h1> */}
       <div className="space-y-4">
         <div key={issue.id} className="">
           <div className="mb-6">
@@ -26,7 +26,7 @@ const IssuePage = () => {
               {issue.title}
             </h2>
             <div className="text-sm text-gray-500">
-              Opened by {issue.user} on{" "}
+              Opened by {issue.user?.toString()} on{" "}
               {new Date(issue.created_at).toLocaleDateString()}
             </div>
             <div>
@@ -41,8 +41,11 @@ const IssuePage = () => {
                 <span className="font-medium">Comments ({issue.comments})</span>
               </div>
               <div className="space-y-2">
-                {issue.comments_list.map((comment) => (
-                  <div key={comment.id} className="bg-zinc-800 p-3 rounded-lg">
+                {issue.comments_list?.map((comment) => (
+                  <div
+                    key={comment.id}
+                    className="bg-zinc-800 p-3 rounded-lg border border-transparent transition hover:border-zinc-600 cursor-pointer"
+                  >
                     <div className="font-medium text-sm mb-1">
                       {comment.user}
                     </div>

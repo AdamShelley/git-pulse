@@ -56,7 +56,7 @@ const SaveToObsidianButton = ({ issue }: IssueProps) => {
       const result = await invoke("save_to_obsidian", {
         issues: [formattedIssue],
         vaultPath,
-        filename: `${repo}-issues.md`,
+        filename: `issues.md`,
       });
 
       setSuccess(result as string);

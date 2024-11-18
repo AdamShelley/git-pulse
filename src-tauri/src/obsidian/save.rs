@@ -1,5 +1,7 @@
 use crate::github::types::GitHubApiIssue;
+use chrono::Local;
 use std::fs;
+use std::io::Write;
 use std::path::PathBuf;
 use tauri::command;
 
@@ -7,7 +9,6 @@ use tauri::command;
 pub async fn save_to_obsidian(
     issues: Vec<GitHubApiIssue>,
     vault_path: String,
-    filename: String,
 ) -> Result<String, String> {
     let mut markdown = String::new();
 
@@ -31,10 +32,32 @@ pub async fn save_to_obsidian(
         ));
     }
 
+    let today = Local::now().format("%d-%m-%Y").to_string();
+    let filename = format!("{}.md", today);
+
     let mut path = PathBuf::from(vault_path);
-    path.push(filename);
+    path.push(&filename);
 
-    fs::write(&path, markdown).map_err(|e| format!("Failed to write file: {}", e))?;
+    if path.exists() {
+        let mut file = fs::OpenOptions::new()
+            .append(true)
+            .open(&path)
+            .map_err(|e| format!("Failed to open fiole: {}", e))?;
 
-    Ok(format!("Successfully saved to {}", path.display()))
+        let existing_content =
+            fs::read_to_string(&path).map_err(|e| format!("Failed to read file: {}", e))?;
+
+        if !existing_content.ends_with("\n\n") {
+            writeln!(file).map_err(|e| format!("Failed to write newline: {}", e))?;
+            writeln!(file).map_err(|e| format!("Failed to write newline: {}", e))?;
+        }
+
+        file.write_all(markdown.as_bytes())
+            .map_err(|e| format!("Failed to append: {}", e))?;
+
+        Ok(format!("Successfully appended to {}", path.display()))
+    } else {
+        fs::write(&path, markdown).map_err(|e| format!("Failed to write file: {}", e))?;
+        Ok(format!("Successfully created at {}", path.display()))
+    }
 }

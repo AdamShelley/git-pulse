@@ -7,9 +7,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { GitBranch, Home, Search, Settings } from "lucide-react";
+import { Home, LucideGitFork, Search, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const items = [
@@ -33,15 +32,14 @@ const items = [
 export function AppSidebar() {
   return (
     <Sidebar className="border-zinc-700 ">
-      <SidebarContent>
+      <SidebarContent className="p-2">
         <SidebarGroup>
           <SidebarGroupLabel className="text-zinc-300 text-sm flex items-center justify-between">
             {/* TODO: Replace with real icon */}
             <div className="flex ">
-              <GitBranch className="w-5 h-5 mr-2" />
+              <LucideGitFork className="w-5 h-5 mr-2" />
               Git Pulse
             </div>
-            <SidebarTrigger />
           </SidebarGroupLabel>
 
           <SidebarGroupContent className="">
@@ -56,6 +54,13 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+            </SidebarMenu>
+            <SidebarMenu className="mt-5 text-zinc-400 font-semibold">
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link to="/issues">Recently Viewed</Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

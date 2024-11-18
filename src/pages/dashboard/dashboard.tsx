@@ -163,15 +163,15 @@ const IssuesDashboard = () => {
 
   return (
     <div className="p-1 max-w-4xl mx-auto mt-4">
-      {/* <h1 className="text-xl font-semibold mb-4 text-center">Issues</h1> */}
       <div className="space-y-4">
         {issues.map((issue) => (
-          <Card key={issue.id} className="bg-zinc-900/20 border-zinc-700/70 ">
+          <Card
+            key={issue.id}
+            onClick={() => navigateToIssueDetail(issue)}
+            className="bg-zinc-900/50 border-zinc-700/50 hover:border-zinc-700 transition cursor-pointer flex items-center justify-between"
+          >
             <CardHeader>
-              <CardTitle
-                className="flex text-md font-medium items-center gap-2 cursor-pointer m-0"
-                onClick={() => navigateToIssueDetail(issue)}
-              >
+              <CardTitle className="flex text-md font-medium items-center gap-2  m-0">
                 {issue.state === "open" ? (
                   <AlertCircle className="w-5 h-5 text-red-500" />
                 ) : (
@@ -180,7 +180,7 @@ const IssuesDashboard = () => {
                 {issue.title}
               </CardTitle>
               <div className="text-sm text-gray-500">
-                Opened by {issue.user} on{" "}
+                Opened by {issue.user?.toString()} on{" "}
                 {new Date(issue.created_at).toLocaleDateString()}
               </div>
             </CardHeader>
