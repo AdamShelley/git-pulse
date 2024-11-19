@@ -21,12 +21,11 @@ pub async fn save_to_obsidian(
             .join(", ");
 
         markdown.push_str(&format!(
-            "- [ ] {}\n  - Created: {}\n  - Tags: {}\n  - URL: {}\n  - Author: {}\n  - State: {}\n  - Description: {}\n\n",
+            "- [ ] {}\n  - Created: {}\n  - Tags: {}\n  - URL: {}\n  - State: {}\n  - Description: {}\n\n",
             issue.title,
             issue.created_at,
             if tags.is_empty() { "none" } else { &tags },
             issue.html_url,
-            issue.user.login,
             issue.state,
             issue.body.lines().next().unwrap_or("No description")
         ));

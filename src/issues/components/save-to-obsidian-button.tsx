@@ -1,13 +1,25 @@
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { Button } from "@/components/ui/button";
-import { Issue } from "@/types/types";
+import { Issue, IssueData } from "@/types/types";
 import { toast } from "sonner";
 import { useState } from "react";
-import { Download, FolderOpen } from "lucide-react";
+import {
+  Download,
+  FolderArchive,
+  FolderOpen,
+  SeparatorVerticalIcon,
+  Vault,
+} from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface IssueProps {
-  issue: Issue;
+  issue: IssueData;
 }
 
 const SaveToObsidianButton = ({ issue }: IssueProps) => {
@@ -19,28 +31,23 @@ const SaveToObsidianButton = ({ issue }: IssueProps) => {
   const [vaultPath, setVaultPath] = useState("");
   const [success, setSuccess] = useState("");
 
-  const validateAndFormatIssue = (rawIssue: Issue) => {
+  const validateAndFormatIssue = (rawIssue: IssueData) => {
     // Format the issue with correct field names to match Rust struct
     const formattedIssue = {
-      id: rawIssue.id,
+      id: rawIssue.number,
       title: rawIssue.title,
       body: rawIssue.body,
       state: rawIssue.state,
       created_at: rawIssue.created_at,
-      html_url: rawIssue.html_url,
+      html_url: "",
       comments: rawIssue.comments,
       // Change tags to labels and ensure correct format
-      labels: Array.isArray(rawIssue.tags)
-        ? rawIssue.tags.map((tag: any) => ({
+      labels: Array.isArray(rawIssue.labels)
+        ? rawIssue.labels.map((tag: any) => ({
             name: typeof tag === "string" ? tag : tag.name,
           }))
         : [],
-      user: {
-        login:
-          typeof rawIssue.user === "string"
-            ? rawIssue.user
-            : rawIssue.user.login,
-      },
+      creator: rawIssue.creator,
     };
 
     console.log("Formatted issue:", formattedIssue);
@@ -87,20 +94,46 @@ const SaveToObsidianButton = ({ issue }: IssueProps) => {
   };
 
   return (
-    <div className="flex gap-4 mt-5">
-      <Button onClick={selectVaultPath} variant="outline" className="flex-1">
-        <FolderOpen className="mr-2 h-4 w-4" />
-        Select Vault Directory
-      </Button>
-
-      <Button
-        onClick={saveToObsidian}
-        disabled={issues.length === 0 || !vaultPath}
-        className="flex-1"
-      >
-        <Download className="mr-2 h-4 w-4" />
-        Save to Obsidian
-      </Button>
+    <div className="mt-4 w-full flex justify-end">
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <Button
+              onClick={selectVaultPath}
+              variant="outline"
+              className="flex-1 mr-2"
+            >
+              <FolderOpen className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Select Obsidian Vault</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger>
+            <Button
+              onClick={saveToObsidian}
+              disabled={issues.length === 0 || !vaultPath}
+              className="flex-1 mr-2"
+              variant="outline"
+            >
+              <SeparatorVerticalIcon className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Save to changelog</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger>
+            <Button
+              onClick={saveToObsidian}
+              disabled={issues.length === 0 || !vaultPath}
+              className="flex-1 mr-2"
+            >
+              <Download className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Summarise for changelog</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 };

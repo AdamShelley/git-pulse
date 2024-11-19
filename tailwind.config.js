@@ -71,10 +71,10 @@ module.exports = {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
-		fontSize: {
-			'2xs': '0.625rem',
-			'3xs': '0.5rem'
-		},
+  		fontSize: {
+  			'2xs': '0.625rem',
+  			'3xs': '0.5rem'
+  		},
   		fontFamily: {
   			sans: ["var(--font-sans)", ...fontFamily.sans],
   			inconsolata: ['Inconsolata', ...fontFamily.mono],

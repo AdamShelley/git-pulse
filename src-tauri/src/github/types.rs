@@ -9,10 +9,8 @@ pub struct GitHubApiIssue {
     pub state: String,
     pub created_at: String,
     pub html_url: String,
-    pub comments: i32,
     #[serde(rename = "labels")]
     pub tags: Vec<Label>,
-    pub user: User,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

@@ -13,6 +13,7 @@ export interface Issue {
     user: string;
     body: string;
   }>;
+  creator: string;
 }
 export interface Label {
   name: string;
@@ -31,4 +32,24 @@ export interface Comment {
 // For components
 export interface IssueProps {
   issue: Issue;
+}
+
+export interface CommentData {
+  id: number;
+  body: string;
+  created_at: string;
+  updated_at?: string;
+  author: string;
+}
+
+export interface IssueData {
+  number: number;
+  title: string;
+  state: string;
+  created_at: string;
+  body: string | null;
+  labels: string[];
+  assignees: string[];
+  comments: CommentData[];
+  creator: string;
 }

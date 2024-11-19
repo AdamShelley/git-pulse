@@ -1,137 +1,36 @@
-import React, { useState, useEffect } from "react";
-import {
-  Activity,
-  MessageSquare,
-  AlertCircle,
-  CheckCircle,
-} from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { Activity, AlertCircle, CheckCircle } from "lucide-react";
+import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Link, useNavigate } from "react-router-dom";
-import { Issue } from "@/types/types";
+import { useNavigate } from "react-router-dom";
+import { IssueData } from "@/types/types";
+import { invoke } from "@tauri-apps/api/core";
 
 const IssuesDashboard = () => {
-  const [issues, setIssues] = useState<Issue[]>([]);
+  const [issues, setIssues] = useState<IssueData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Mock data - replace with actual GitHub API calls in Tauri
-  const mockIssues: Issue[] = [
-    {
-      id: 1,
-      title: "Bug in authentication flow",
-      state: "open" as "open",
-      comments: 3,
-      user: "johndoe",
-      created_at: "2024-03-15T10:00:00Z",
-      body: "Users are getting logged out randomly...",
-      tags: ["bug", "authentication"],
-      comments_list: [
-        { id: 1, user: "maintainer", body: "Can you provide more details?" },
-        {
-          id: 2,
-          user: "johndoe",
-          body: "It happens after 30 minutes of inactivity",
-        },
-      ],
-      html_url: "https://github.com/owner/repo/issues/1",
-    },
-    {
-      id: 2,
-      title: "Feature request: Dark mode",
-      state: "closed" as "closed",
-      comments: 5,
-      user: "janesmith",
-      created_at: "2024-03-14T15:30:00Z",
-      body: "Would be great to have dark mode support",
-      tags: ["Design"],
-      html_url: "https://github.com/owner/repo/issues/2",
-      comments_list: [
-        {
-          id: 3,
-          user: "maintainer",
-          body: "Good idea, we'll add it to the roadmap",
-        },
-      ],
-    },
-    {
-      id: 3,
-      title: "Performance issues",
-      state: "open" as "open",
-      comments: 2,
-      user: "johndoe",
-      created_at: "2024-03-14T10:00:00Z",
-      body: "The app is slow when loading large files",
-      tags: ["Performance"],
-      html_url: "https://github.com/owner/repo/issues/3",
-      comments_list: [
-        {
-          id: 4,
-          user: "maintainer",
-          body: "Can you provide more details?",
-        },
-        {
-          id: 5,
-          user: "johndoe",
-          body: "It happens with files larger than 1MB",
-        },
-      ],
-    },
-
-    {
-      id: 4,
-      title: "Feature request: Mobile app",
-      state: "open" as "open",
-      comments: 1,
-      user: "janes smith",
-      created_at: "2024-03-13T10:00:00Z",
-      body: "Would be great to have a mobile app",
-      html_url: "https://github.com/owner/repo/issues/4",
-      tags: ["Feature"],
-      comments_list: [
-        {
-          id: 6,
-          user: "maintainer",
-          body: "Good idea, we'll add it to the roadmap",
-        },
-      ],
-    },
-    {
-      id: 4,
-      title: "Feature request: Mobile app",
-      state: "open" as "open",
-      comments: 1,
-      user: "janes smith",
-      created_at: "2024-03-13T10:00:00Z",
-      body: "Would be great to have a mobile app",
-      html_url: "https://github.com/owner/repo/issues/5",
-      tags: ["Feature"],
-      comments_list: [
-        {
-          id: 6,
-          user: "maintainer",
-          body: "Good idea, we'll add it to the roadmap",
-        },
-      ],
-    },
-  ];
-
   useEffect(() => {
-    // Simulate API call
     const fetchIssues = async () => {
       try {
-        // Replace with actual GitHub API call using Tauri
-        setIssues(mockIssues);
+        let owner = "AdamShelley";
+        let repo = "git-pulse";
+
+        console.log("FETCHING DATA");
+
+        const issues: IssueData[] = await invoke("fetch_issues", {
+          owner,
+          repo,
+        });
+
+        setIssues(issues);
+
         setLoading(false);
       } catch (err) {
-        setError("Failed to fetch issues");
+        console.log("Failed to fetch issues", err);
+        setError(`Failed to fetch issues ${err}`);
         setLoading(false);
       }
     };
@@ -164,9 +63,9 @@ const IssuesDashboard = () => {
   return (
     <div className="p-1 max-w-4xl mx-auto mt-4">
       <div className="space-y-4">
-        {issues.map((issue) => (
+        {issues.map((issue, index) => (
           <Card
-            key={issue.id}
+            key={issue.title}
             onClick={() => navigateToIssueDetail(issue)}
             className="bg-zinc-900/50 border-zinc-700/50 hover:border-zinc-700 transition cursor-pointer flex items-center justify-between"
           >
@@ -180,7 +79,7 @@ const IssuesDashboard = () => {
                 {issue.title}
               </CardTitle>
               <div className="text-sm text-gray-500">
-                Opened by {issue.user?.toString()} on{" "}
+                Opened by {issue?.creator} on Opened by (ADD AUTHOR) on{" "}
                 {new Date(issue.created_at).toLocaleDateString()}
               </div>
             </CardHeader>
@@ -188,10 +87,10 @@ const IssuesDashboard = () => {
               <p className="text-sm">{issue.body}</p>
             </CardContent> */}
             <CardFooter className="flex gap-2">
-              {issue.tags?.map((tag, index) => (
+              {issue.labels?.map((tag, index) => (
                 <span
                   key={index}
-                  className="px-2 py-1 text-xs rounded-sm border border-teal-700 bg-zinc-800 text-zinc-200"
+                  className="px-2 py-1 text-xs rounded-sm border border-teal-700 bg-zinc-800 text-zinc-200 capitalize"
                 >
                   {tag}
                 </span>
