@@ -3,7 +3,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { Button } from "@/components/ui/button";
 import { Issue, IssueData } from "@/types/types";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Download,
   FolderArchive,
@@ -17,6 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import useSettingsStore from "@/stores/settings-store";
 
 interface IssueProps {
   issue: IssueData;
@@ -28,8 +29,9 @@ const SaveToObsidianButton = ({ issue }: IssueProps) => {
   const [issues, setIssues] = useState([issue]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [vaultPath, setVaultPath] = useState("");
   const [success, setSuccess] = useState("");
+
+  const { file_directory: vaultPath, loadSettings } = useSettingsStore();
 
   const validateAndFormatIssue = (rawIssue: IssueData) => {
     // Format the issue with correct field names to match Rust struct
@@ -50,7 +52,6 @@ const SaveToObsidianButton = ({ issue }: IssueProps) => {
       creator: rawIssue.creator,
     };
 
-    console.log("Formatted issue:", formattedIssue);
     return formattedIssue;
   };
 
@@ -78,36 +79,13 @@ const SaveToObsidianButton = ({ issue }: IssueProps) => {
     }
   };
 
-  const selectVaultPath = async () => {
-    try {
-      const selected = await open({
-        directory: true,
-        multiple: false,
-        title: "Select Obsidian Vault Directory",
-      });
-      if (selected) {
-        setVaultPath(selected);
-      }
-    } catch (err) {
-      setError("Failed to select directory");
-    }
-  };
+  useEffect(() => {
+    loadSettings();
+  });
 
   return (
     <div className="mt-4 w-full flex justify-end">
       <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger>
-            <Button
-              onClick={selectVaultPath}
-              variant="outline"
-              className="flex-1 mr-2"
-            >
-              <FolderOpen className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Select Obsidian Vault</TooltipContent>
-        </Tooltip>
         <Tooltip>
           <TooltipTrigger>
             <Button

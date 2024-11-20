@@ -79,7 +79,7 @@ const IssuesDashboard = () => {
                 {issue.title}
               </CardTitle>
               <div className="text-sm text-gray-500">
-                Opened by {issue?.creator} on Opened by (ADD AUTHOR) on{" "}
+                Opened by {issue?.creator} on{" "}
                 {new Date(issue.created_at).toLocaleDateString()}
               </div>
             </CardHeader>
