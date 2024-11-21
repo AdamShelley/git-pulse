@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
 
 interface Settings {
   theme: string;
@@ -57,6 +58,8 @@ const Settings = () => {
     setIsSaving(true);
     setSaveStatus("Saving...");
 
+    console.log(settingsToSave);
+
     try {
       await invoke("save_settings", { settings: settingsToSave });
       setSaveStatus("Settings saved successfully");
@@ -94,10 +97,13 @@ const Settings = () => {
           Settings
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-3 space-y-8">
         <div className="flex flex-col">
           <label className="text-sm font-medium">Theme</label>
-          <Select onValueChange={(e) => handleChange("theme", e)}>
+          <Select
+            onValueChange={(e) => handleChange("theme", e)}
+            defaultValue="system"
+          >
             <SelectTrigger>
               <SelectValue placeholder="Theme" />
             </SelectTrigger>
@@ -108,21 +114,13 @@ const Settings = () => {
             </SelectContent>
           </Select>
         </div>
-        <div className="items-top flex space-x-2 mt-4">
-          <Checkbox id="notifications" />
-          <div className="grid gap-1.5 leading-none">
-            <label
-              htmlFor="notifications"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Turn on notifications
-            </label>
-          </div>
-        </div>
 
-        <div className="flex flex-col gap-2 mt-5">
+        <div className="flex flex-col gap-2">
           <label className="font-medium text-sm">Font Size</label>
-          <Select onValueChange={(e) => handleChange("font_size", e)}>
+          <Select
+            onValueChange={(e) => handleChange("font_size", e)}
+            defaultValue="medium"
+          >
             <SelectTrigger>
               <SelectValue placeholder="Font Size" />
             </SelectTrigger>
@@ -134,14 +132,32 @@ const Settings = () => {
           </Select>
         </div>
 
-        <Button
-          onClick={selectVaultPath}
-          variant="outline"
-          className="flex-1 mr-2"
-        >
-          <FolderOpen className="h-4 w-4" />
-          Select Obsidian Vault
-        </Button>
+        <div className="items-top flex gap-2 ">
+          <Checkbox
+            id="notifications"
+            checked={settings.notifications}
+            onCheckedChange={(checked) =>
+              handleChange("notifications", checked)
+            }
+          />
+          <div className="grid gap-1.5 leading-none">
+            <label
+              htmlFor="notifications"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Turn on notifications
+            </label>
+          </div>
+        </div>
+
+        <div className="mt-3 flex items-center justify-start gap-2 w-full">
+          <Button onClick={selectVaultPath} variant="outline" className="">
+            <FolderOpen className="h-4 w-4" />
+          </Button>
+          <label className="font-medium text-sm" htmlFor="vaultPath">
+            Select Obsidian vault path
+          </label>
+        </div>
       </CardContent>
       <CardFooter className="flex gap-2 items-center justify-center mt-2">
         <Button
@@ -151,10 +167,6 @@ const Settings = () => {
         >
           {isSaving ? "Saving..." : "Save Settings"}
         </Button>
-
-        {saveStatus && (
-          <div className="text-sm text-gray-600">{saveStatus}</div>
-        )}
       </CardFooter>
     </Card>
   );

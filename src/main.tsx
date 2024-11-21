@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import IssuePage from "./issues/issue-page";
+import IssuePage from "./pages/issues/issue-page";
 import Root from "./root";
 import Settings from "./pages/settings/settings";
 

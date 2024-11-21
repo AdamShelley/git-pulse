@@ -11,8 +11,6 @@ const IssuePage = () => {
   const { state } = useLocation();
   const { issue } = state as IssuePageProps;
 
-  console.log(issue);
-
   return (
     <div className="p-1 max-w-4xl mx-auto w-full">
       <div className="space-y-4">
