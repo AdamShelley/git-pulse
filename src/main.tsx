@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import IssuePage from "./pages/issues/issue-page";
 import Root from "./root";
 import Settings from "./pages/settings/settings";
+import SelectRepos from "./pages/dashboard/components/select-repos";
 
 const router = createBrowserRouter([
   {
@@ -14,6 +15,11 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <App />,
+        children: [],
+      },
+      {
+        path: "/select-repos",
+        element: <SelectRepos />,
       },
       {
         path: "/issues/:id",

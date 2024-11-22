@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useState, useEffect } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, CheckCircle, FolderOpen } from "lucide-react";
+import { FolderOpen, Github } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -40,10 +40,12 @@ const Settings = () => {
   const [vaultPath, setVaultPath] = useState("");
 
   const loadSettings = async () => {
+    console.log("Loading settings");
     try {
       const savedSettings = await invoke<Settings>("load_settings");
-      setSettings(savedSettings);
+
       console.log(savedSettings);
+      setSettings(savedSettings);
     } catch (error) {
       console.error("Failed to load settings:", error);
     }
@@ -63,6 +65,7 @@ const Settings = () => {
     try {
       await invoke("save_settings", { settings: settingsToSave });
       setSaveStatus("Settings saved successfully");
+      toast.success("Settings saved successfully");
       setTimeout(() => setSaveStatus(""), 3000);
     } catch (error) {
       console.error("Failed to save settings:", error);
@@ -99,10 +102,10 @@ const Settings = () => {
       </CardHeader>
       <CardContent className="p-3 space-y-8">
         <div className="flex flex-col">
-          <label className="text-sm font-medium">Theme</label>
+          <label className="text-sm font-medium mb-2">Theme</label>
           <Select
             onValueChange={(e) => handleChange("theme", e)}
-            defaultValue="system"
+            value={settings.theme || "System"}
           >
             <SelectTrigger>
               <SelectValue placeholder="Theme" />
@@ -119,12 +122,12 @@ const Settings = () => {
           <label className="font-medium text-sm">Font Size</label>
           <Select
             onValueChange={(e) => handleChange("font_size", e)}
-            defaultValue="medium"
+            value={settings.font_size || "Medium"}
           >
             <SelectTrigger>
               <SelectValue placeholder="Font Size" />
             </SelectTrigger>
-            <SelectContent className="font-inherit">
+            <SelectContent className="font-inherit ">
               <SelectItem value="small">Small</SelectItem>
               <SelectItem value="medium">Medium</SelectItem>
               <SelectItem value="large">Large</SelectItem>
@@ -132,7 +135,7 @@ const Settings = () => {
           </Select>
         </div>
 
-        <div className="items-top flex gap-2 ">
+        <div className="mt-3 flex items-center justify-end gap-2 w-full">
           <Checkbox
             id="notifications"
             checked={settings.notifications}
@@ -150,12 +153,21 @@ const Settings = () => {
           </div>
         </div>
 
-        <div className="mt-3 flex items-center justify-start gap-2 w-full">
+        <div className="mt-3 flex items-center justify-end gap-2 w-full">
           <Button onClick={selectVaultPath} variant="outline" className="">
             <FolderOpen className="h-4 w-4" />
           </Button>
           <label className="font-medium text-sm" htmlFor="vaultPath">
             Select Obsidian vault path
+          </label>
+        </div>
+
+        <div className="mt-3 flex items-center justify-end gap-2 w-full">
+          <Button onClick={selectVaultPath} variant="outline" className="">
+            <Github className="h-4 w-4" />
+          </Button>
+          <label className="font-medium text-sm" htmlFor="vaultPath">
+            OAuth Login
           </label>
         </div>
       </CardContent>

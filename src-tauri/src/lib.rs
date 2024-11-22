@@ -4,6 +4,8 @@ mod settings;
 
 use github::issues::check_cache_status;
 use github::issues::fetch_issues;
+use github::issues::fetch_repos;
+
 use github::issues::IssuesCache;
 use obsidian::save::save_to_obsidian;
 use settings::settings::load_settings;
@@ -22,7 +24,8 @@ pub fn run() {
             check_cache_status,
             fetch_issues,
             load_settings,
-            save_settings
+            save_settings,
+            fetch_repos
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

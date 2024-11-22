@@ -1,3 +1,15 @@
+export interface Repository {
+  full_name: string;
+  name: string;
+  fork: boolean;
+  created_at: string;
+  updated_at: string;
+  description: string;
+  visibility: string;
+  stargazers_count: number;
+  language: string;
+}
+
 export interface Issue {
   id: number;
   title: string;

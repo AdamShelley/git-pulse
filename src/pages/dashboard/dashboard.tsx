@@ -5,6 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useNavigate } from "react-router-dom";
 import { IssueData } from "@/types/types";
 import { invoke } from "@tauri-apps/api/core";
+import { Button } from "@/components/ui/button";
 
 const CACHE_CHECK_INTERVAL = 30000;
 

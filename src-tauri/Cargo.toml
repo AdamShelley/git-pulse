@@ -28,3 +28,7 @@ octocrab = "0.42.0"
 anyhow = "1.0"
 tauri-plugin-log = "2"
 dotenvy = "0.15"
+tokio = { version = "1", features = ["full"] }
+
+# A
+async-openai = "0.26.0"

@@ -1,6 +1,7 @@
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -8,8 +9,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Home, LucideGitFork, Search, Settings } from "lucide-react";
-import { Link } from "react-router-dom";
+import { BoxSelect, Home, LucideGitFork, Search, Settings } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "./ui/button";
 
 const items = [
   {
@@ -30,6 +32,13 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const navigate = useNavigate();
+
+  const showRepos = () => {
+    console.log("Navigating");
+    navigate("/select-repos");
+  };
+
   return (
     <Sidebar className="border-zinc-700 ">
       <SidebarContent className="p-2">
@@ -65,6 +74,16 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <Button
+          className="m-3 border border-white/20"
+          variant="outline"
+          onClick={showRepos}
+        >
+          <BoxSelect />
+          Select Repo's to follow
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 }
