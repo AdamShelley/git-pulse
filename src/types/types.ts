@@ -65,3 +65,7 @@ export interface IssueData {
   comments: CommentData[];
   creator: string;
 }
+
+export interface ExtendedIssueData extends IssueData {
+  repoName: string;
+}
