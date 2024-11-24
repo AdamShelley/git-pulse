@@ -12,6 +12,9 @@ import {
 import { BoxSelect, Home, LucideGitFork, Search, Settings } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
+import useRecentlyViewedStore from "@/stores/recently-viewed-store";
+import { useEffect } from "react";
+import { invoke } from "@tauri-apps/api/core";
 
 const items = [
   {
@@ -33,11 +36,22 @@ const items = [
 
 export function AppSidebar() {
   const navigate = useNavigate();
+  const { viewedIssues } = useRecentlyViewedStore();
 
   const showRepos = () => {
     console.log("Navigating");
     navigate("/select-repos");
   };
+
+  const clearViewed = async () => {
+    await invoke("clear_recents");
+  };
+
+  useEffect(() => {
+    useRecentlyViewedStore.getState().initialize();
+
+    console.log(viewedIssues);
+  }, []);
 
   return (
     <Sidebar className="border-zinc-700 ">
@@ -66,9 +80,25 @@ export function AppSidebar() {
             </SidebarMenu>
             <SidebarMenu className="mt-5 text-zinc-400 font-semibold">
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link to="/issues">Recently Viewed</Link>
-                </SidebarMenuButton>
+                <div className="text-zinc-400 font-semibold">
+                  <h3>Recently Viewed</h3>
+                </div>
+              </SidebarMenuItem>
+              {viewedIssues.length > 0 &&
+                viewedIssues.map((issue) => (
+                  <SidebarMenuItem key={issue.id}>
+                    <SidebarMenuButton
+                      asChild
+                      className="m-0 pl-1 text-foreground/80"
+                    >
+                      <Link to={`/issues/${issue.id}`} className="text-xs">
+                        <span>{issue.name}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              <SidebarMenuItem>
+                <Button onClick={clearViewed}>Clear</Button>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>

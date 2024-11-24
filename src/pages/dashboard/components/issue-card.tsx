@@ -1,4 +1,5 @@
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import useRecentlyViewedStore from "@/stores/recently-viewed-store";
 import { ExtendedIssueData } from "@/types/types";
 import { AlertCircle, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -7,8 +8,14 @@ export const IssueCard = ({ issue }: { issue: ExtendedIssueData }) => {
   const navigate = useNavigate();
 
   const navigateToIssueDetail = (issue: any) => {
+    useRecentlyViewedStore.getState().addItem({
+      id: issue.id,
+      name: issue.title,
+    });
+
     navigate(`/issues/${issue.id}`, { state: { issue } });
   };
+
   return (
     <Card
       key={issue.title}
@@ -25,7 +32,7 @@ export const IssueCard = ({ issue }: { issue: ExtendedIssueData }) => {
           {issue.title}
         </CardTitle>
         <div className="text-sm text-gray-500 flex align-center jusitfy-center">
-          <p className="mr-2 underline text-slate-300">{issue.repoName}</p>
+          {/* <p className="mr-2 underline text-slate-300">{issue.repoName}</p> */}
           <p>
             Opened by {issue?.creator} on{" "}
             {new Date(issue.created_at).toLocaleDateString()}

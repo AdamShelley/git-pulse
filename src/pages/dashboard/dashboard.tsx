@@ -1,14 +1,15 @@
 import { Activity, AlertCircle, RefreshCcw } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { IssueCard } from "./components/issue-card";
 import { useFetchIssues } from "@/hooks/use-create-fetch-issues";
+import RepoTabs from "./components/repo-tabs";
+import { ExtendedIssueData } from "@/types/types";
 
 const IssuesDashboard = () => {
-  const { issues, loading, lastUpdated, error, refetch } = useFetchIssues({
-    repos: ["git-pulse", "test-repo"],
-  });
+  const repoNames = ["git-pulse", "test-repo"];
 
-  console.log(issues, loading, lastUpdated, error, refetch);
+  const { issues, loading, lastUpdated, error, refetch } = useFetchIssues({
+    repos: repoNames,
+  });
 
   if (loading) {
     return (
@@ -42,9 +43,10 @@ const IssuesDashboard = () => {
         )}
       </div>
       <div className="space-y-4">
-        {issues.map((issue) => (
-          <IssueCard issue={issue} key={issue.title} />
-        ))}
+        <RepoTabs
+          issues={issues as ExtendedIssueData[]}
+          repoNames={repoNames}
+        />
       </div>
     </div>
   );

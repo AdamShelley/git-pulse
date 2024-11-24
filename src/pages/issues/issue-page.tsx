@@ -1,14 +1,21 @@
-import { Issue, IssueData } from "@/types/types";
+import { ExtendedIssueData } from "@/types/types";
 import { AlertCircle, CheckCircle, MessageSquare } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import SaveToObsidianButton from "./components/save-to-obsidian-button";
 
 interface IssuePageProps {
-  issue: IssueData;
+  issue: ExtendedIssueData;
 }
 
 const IssuePage = () => {
   const { state } = useLocation();
+
+  if (!state) {
+    // Get the single issue data from cache?
+    
+    return <div>Loading..</div>;
+  }
+
   const { issue } = state as IssuePageProps;
 
   return (
@@ -16,13 +23,16 @@ const IssuePage = () => {
       <div className="space-y-4">
         <div key={issue.number} className="">
           <div className="mb-6">
-            <h2 className="text-md font-semibold flex items-center gap-2 cursor-pointer">
+            <h2 className="text-md font-semibold flex items-center gap-2 ">
               {issue.state === "open" ? (
                 <AlertCircle className="w-5 h-5 text-red-500" />
               ) : (
                 <CheckCircle className="w-5 h-5 text-green-500" />
               )}
               {issue.title}
+              <p className="text-sm text-slate-400 border p-1 border-slate-500 rounded-sm">
+                {issue.repoName}
+              </p>
             </h2>
             <div className="text-sm text-gray-500">
               Opened by {issue.creator} on

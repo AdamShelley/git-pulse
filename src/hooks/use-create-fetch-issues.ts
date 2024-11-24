@@ -38,6 +38,7 @@ export const useFetchIssues = ({ repos }: { repos: string[] }) => {
     return issues.map((issue) => ({
       ...issue,
       repoName: repo,
+      id: `${owner}-${repo}-${issue.number}`,
     }));
   };
 
