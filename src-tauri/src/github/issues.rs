@@ -236,3 +236,24 @@ pub async fn fetch_issues(
 
     Ok(all_issues)
 }
+
+#[command]
+pub async fn get_cached_issue(
+    owner: String,
+    repo: String,
+    issue_number: i64,
+    cache: State<'_, IssuesCache>,
+) -> Result<Option<IssueData>, String> {
+    let cache_key = format!("{}/{}", owner, repo);
+
+    let cache_guard = cache.cache.lock().map_err(|e| e.to_string())?;
+
+    if let Some((cached_issues, _)) = cache_guard.get(&cache_key) {
+        return Ok(cached_issues
+            .iter()
+            .find(|issue| issue.number == issue_number)
+            .cloned());
+    }
+
+    Ok(None)
+}

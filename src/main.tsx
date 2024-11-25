@@ -17,10 +17,12 @@ const router = createBrowserRouter([
         element: <App />,
         children: [],
       },
+
       {
         path: "/select-repos",
         element: <SelectRepos />,
       },
+
       {
         path: "/issues/:id",
         element: <IssuePage />,

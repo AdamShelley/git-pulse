@@ -23,15 +23,15 @@ export const IssueCard = ({ issue }: { issue: ExtendedIssueData }) => {
       className="bg-zinc-900/50 border-zinc-700/50 hover:border-zinc-700 transition cursor-pointer flex items-center justify-between"
     >
       <CardHeader>
-        <CardTitle className="flex text-md font-medium items-center gap-2  m-0">
+        <CardTitle className="flex text-sm font-medium items-center justify-start gap-3  ">
           {issue.state === "open" ? (
-            <AlertCircle className="w-5 h-5 text-red-500" />
+            <AlertCircle className="w-5 h-5 min-w-5 text-red-500" />
           ) : (
             <CheckCircle className="w-5 h-5 text-green-500" />
           )}
-          {issue.title}
+          <span className="line-clamp-1">{issue.title}</span>
         </CardTitle>
-        <div className="text-sm text-gray-500 flex align-center jusitfy-center">
+        <div className="text-sm text-gray-500 flex align-center">
           {/* <p className="mr-2 underline text-slate-300">{issue.repoName}</p> */}
           <p>
             Opened by {issue?.creator} on{" "}

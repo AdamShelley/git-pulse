@@ -6,6 +6,7 @@ mod settings;
 use github::issues::check_cache_status;
 use github::issues::fetch_issues;
 use github::issues::fetch_repos;
+use github::issues::get_cached_issue;
 use github::issues::IssuesCache;
 
 use obsidian::save::save_to_obsidian;
@@ -36,7 +37,8 @@ pub fn run() {
             clear_recents,
             add_recent_item,
             load_recents,
-            save_recents
+            save_recents,
+            get_cached_issue
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

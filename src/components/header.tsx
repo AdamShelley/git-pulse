@@ -2,6 +2,8 @@ import { Link, useLocation } from "react-router-dom";
 import { SidebarTrigger } from "./ui/sidebar";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Bell, User } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Button } from "./ui/button";
 
 const Toolbar = () => {
   const [headerTitle, setHeaderTitle] = useState("Git Pulse");
@@ -32,20 +34,45 @@ const Toolbar = () => {
         )}
         <HeaderText title={headerTitle} />
       </div>
-      <div>
-        <button className="p-2 bg-zinc-900/50 rounded-md hover:bg-zinc-900/60 transition">
-          <Bell className="size-4" />
-        </button>
-        <button className="p-2 bg-zinc-900/50 rounded-md hover:bg-zinc-900/60 transition">
-          <User className="size-4" />
-        </button>
+      <div className="space-x-2">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Bell className="h-4 w-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-64 p-4 -translate-x-8">
+            <div className="space-y-2">
+              <h4 className="font-medium leading-none">Notifications</h4>
+              <p className="text-sm text-muted-foreground">
+                No new notifications
+              </p>
+            </div>
+          </PopoverContent>
+        </Popover>
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <User className="h-4 w-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-64 p-4 -translate-x-8">
+            <div className="space-y-2">
+              <h4 className="font-medium leading-none">Profile</h4>
+              <p className="text-sm text-muted-foreground">
+                Manage your account
+              </p>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   );
 };
 
 const HeaderText = ({ title }: { title: string }) => {
-  return <h1 className=" ml-2 text-sm font-semibold">{title}</h1>;
+  return <h1 className="ml-2 text-sm font-semibold">{title}</h1>;
 };
 
 const Header = () => {

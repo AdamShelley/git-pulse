@@ -19,8 +19,6 @@ export const useFetchIssues = ({ repos }: { repos: string[] }) => {
     repo: string,
     forceRefresh: boolean
   ): Promise<ExtendedIssueData[]> => {
-    console.log("Attempting fetching repo");
-
     const cacheStatus = await invoke<{
       cached: boolean;
       last_updated: string;
@@ -121,5 +119,24 @@ export const useFetchIssues = ({ repos }: { repos: string[] }) => {
 
   const refetch = useCallback(() => fetchIssues(true), [fetchIssues]);
 
-  return { issues, loading, lastUpdated, error, refetch };
+  const fetchCachedIssue = useCallback(
+    async (owner: string, repo: string, issueNumber: number) => {
+      try {
+        const cachedIssue = await invoke<ExtendedIssueData | null>(
+          "get_cached_issue",
+          {
+            owner,
+            repo,
+            issueNumber,
+          }
+        );
+        return cachedIssue;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    []
+  );
+
+  return { issues, loading, lastUpdated, error, refetch, fetchCachedIssue };
 };

@@ -3,18 +3,37 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarRail,
 } from "@/components/ui/sidebar";
-import { BoxSelect, Home, LucideGitFork, Search, Settings } from "lucide-react";
+import {
+  ChevronDown,
+  Home,
+  LucideGitFork,
+  Plus,
+  Search,
+  Settings,
+} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "./ui/button";
 import useRecentlyViewedStore from "@/stores/recently-viewed-store";
 import { useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "./ui/collapsible";
 
 const items = [
   {
@@ -24,7 +43,7 @@ const items = [
   },
   {
     title: "Search",
-    url: "",
+    url: "/search",
     icon: Search,
   },
   {
@@ -49,9 +68,7 @@ export function AppSidebar() {
 
   useEffect(() => {
     useRecentlyViewedStore.getState().initialize();
-
-    console.log(viewedIssues);
-  }, []);
+  }, [clearViewed]);
 
   return (
     <Sidebar className="border-zinc-700 ">
@@ -64,6 +81,10 @@ export function AppSidebar() {
               Git Pulse
             </div>
           </SidebarGroupLabel>
+          <SidebarGroupAction title="Add Repos">
+            <Plus onClick={showRepos} />{" "}
+            <span className="sr-only">Add Repos</span>
+          </SidebarGroupAction>
 
           <SidebarGroupContent className="">
             <SidebarMenu className="mt-2">
@@ -80,40 +101,52 @@ export function AppSidebar() {
             </SidebarMenu>
             <SidebarMenu className="mt-5 text-zinc-400 font-semibold">
               <SidebarMenuItem>
-                <div className="text-zinc-400 font-semibold">
-                  <h3>Recently Viewed</h3>
-                </div>
-              </SidebarMenuItem>
-              {viewedIssues.length > 0 &&
-                viewedIssues.map((issue) => (
-                  <SidebarMenuItem key={issue.id}>
-                    <SidebarMenuButton
-                      asChild
-                      className="m-0 pl-1 text-foreground/80"
-                    >
-                      <Link to={`/issues/${issue.id}`} className="text-xs">
-                        <span>{issue.name}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              <SidebarMenuItem>
-                <Button onClick={clearViewed}>Clear</Button>
+                <Collapsible defaultOpen className="group/collapsible">
+                  <ContextMenu>
+                    <ContextMenuTrigger>
+                      <CollapsibleTrigger className="pl-2 flex items-center justify-between w-full select-none">
+                        Recently Viewed
+                        <ChevronDown
+                          className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"
+                          size="1rem"
+                        />
+                      </CollapsibleTrigger>
+                    </ContextMenuTrigger>
+                    <ContextMenuContent className="dark">
+                      <ContextMenuItem
+                        className="text-xs inset cursor-pointer border-none font-medium text-white font-inter"
+                        onClick={clearViewed}
+                      >
+                        Clear Recently Viewed
+                      </ContextMenuItem>
+                    </ContextMenuContent>
+                  </ContextMenu>
+                  <CollapsibleContent>
+                    {viewedIssues.length > 0 &&
+                      viewedIssues.map((issue) => (
+                        <SidebarMenuItem key={issue.id}>
+                          <SidebarMenuButton
+                            asChild
+                            className="text-foreground/80"
+                          >
+                            <Link
+                              to={`/issues/${issue.id}`}
+                              className="text-xs"
+                            >
+                              <span>{issue.name}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      ))}
+                  </CollapsibleContent>
+                </Collapsible>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
-        <Button
-          className="m-3 border border-white/20"
-          variant="outline"
-          onClick={showRepos}
-        >
-          <BoxSelect />
-          Select Repo's to follow
-        </Button>
-      </SidebarFooter>
+      <SidebarRail />
+      <SidebarFooter></SidebarFooter>
     </Sidebar>
   );
 }

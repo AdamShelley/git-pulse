@@ -31,9 +31,15 @@ const IssuesDashboard = () => {
 
   return (
     <div className="p-1 max-w-4xl mx-auto mt-4">
-      <div className="p-1 max-w-4xl mx-auto mt-4">
+      <div className="space-y-4">
+        <RepoTabs
+          issues={issues as ExtendedIssueData[]}
+          repoNames={repoNames}
+        />
+      </div>
+      <div className="mt-5 p-1">
         {lastUpdated && (
-          <div className="text-sm text-gray-500 mb-4 flex justify-between">
+          <div className="text-sm text-gray-500 flex justify-between">
             <p>Last updated: {new Date(lastUpdated).toLocaleString()}</p>
             <RefreshCcw
               className="size-4 text-muted-foreground cursor-pointer hover:text-foreground transition"
@@ -41,12 +47,6 @@ const IssuesDashboard = () => {
             />
           </div>
         )}
-      </div>
-      <div className="space-y-4">
-        <RepoTabs
-          issues={issues as ExtendedIssueData[]}
-          repoNames={repoNames}
-        />
       </div>
     </div>
   );
