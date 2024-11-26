@@ -1,4 +1,5 @@
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import useRecentlyViewedStore from "@/stores/recently-viewed-store";
 import { ExtendedIssueData } from "@/types/types";
 import { AlertCircle, CheckCircle } from "lucide-react";
@@ -25,7 +26,7 @@ export const IssueCard = ({ issue }: { issue: ExtendedIssueData }) => {
       <CardHeader>
         <CardTitle className="flex text-sm font-medium items-center justify-start gap-3  ">
           {issue.state === "open" ? (
-            <AlertCircle className="w-5 h-5 min-w-5 text-red-500" />
+            <AlertCircle className="w-5 h-5 min-w-5 text-red-700/90" />
           ) : (
             <CheckCircle className="w-5 h-5 text-green-500" />
           )}
@@ -44,7 +45,11 @@ export const IssueCard = ({ issue }: { issue: ExtendedIssueData }) => {
         {issue.labels?.map((tag, index) => (
           <span
             key={index}
-            className="px-2 py-1 text-xs rounded-sm border border-teal-700 bg-zinc-800 text-zinc-200 capitalize"
+            className={cn("px-3 py-1 text-xs rounded-lg capitalize", {
+              "bg-green-500 text-zinc-100": tag === "good first issue",
+              "bg-red-700/50 text-zinc-100": tag === "bug",
+              "bg-secondary text-zinc-100": tag === "enhancement",
+            })}
           >
             {tag}
           </span>

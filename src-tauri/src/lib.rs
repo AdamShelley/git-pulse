@@ -19,6 +19,8 @@ use recents::recents::clear_recents;
 use recents::recents::load_recents;
 use recents::recents::save_recents;
 
+use github::interactions::add_issue_comment;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -38,7 +40,8 @@ pub fn run() {
             add_recent_item,
             load_recents,
             save_recents,
-            get_cached_issue
+            get_cached_issue,
+            add_issue_comment
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
