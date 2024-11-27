@@ -1,5 +1,5 @@
 import { ExtendedIssueData } from "@/types/types";
-import { AlertCircle, CheckCircle, MessageSquare } from "lucide-react";
+import { AlertCircle, CheckCircle } from "lucide-react";
 import { useParams } from "react-router-dom";
 import SaveToObsidianButton from "./components/save-to-obsidian-button";
 import { useFetchIssues } from "@/hooks/use-create-fetch-issues";
@@ -8,6 +8,7 @@ import { extractIssueDetails } from "./components/extract-issue-details";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import AddCommentForm from "./components/add-comment";
+import CommentSection from "./components/comments";
 
 const IssuePage = () => {
   const { id } = useParams<{ id: string }>();
@@ -32,6 +33,10 @@ const IssuePage = () => {
     fetchIssue();
   }, [owner, repo, issueNumber, fetchCachedIssue]);
 
+  const newCommentAddedToIssue = (updatedIssue: ExtendedIssueData) => {
+    setIssue(updatedIssue);
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -45,16 +50,16 @@ const IssuePage = () => {
       <div className="space-y-4">
         <div key={issue.number} className="">
           <div className="mb-6">
-            <h2 className="text-md font-semibold flex items-center  gap-2 ">
-              {issue.state === "open" ? (
-                <AlertCircle className="w-5 h-5 text-red-500" />
-              ) : (
-                <CheckCircle className="w-5 h-5 text-green-500" />
-              )}
-              {issue.title}
-              <p className="text-sm font-semibold border-l-2 p-1 border-white pl-2">
-                {repo}
-              </p>
+            <h2 className="text-md font-semibold flex items-center justify-between mb-1">
+              <div className="flex items-center justify-center gap-2">
+                {issue.state === "open" ? (
+                  <AlertCircle className="w-5 h-5 text-red-500" />
+                ) : (
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                )}
+                <span>{issue.title}</span>
+              </div>
+              <p className="text-sm font-semibold">{repo}</p>
             </h2>
             <div className="text-sm text-gray-500">
               Opened by {issue.creator} on
@@ -68,38 +73,12 @@ const IssuePage = () => {
             <div className="mb-4">
               <SaveToObsidianButton issue={issue} />
             </div>
-            <div className="border-t pt-4">
-              <div className="flex items-center gap-2 mb-2">
-                <MessageSquare className="w-4 h-4" />
-                <span className="font-medium">
-                  Comments ({issue.comments.length})
-                </span>
-              </div>
-              <div className="space-y-2">
-                {issue.comments?.map((comment) => (
-                  <div
-                    key={comment.id}
-                    className="bg-zinc-800 p-3 rounded-lg border border-transparent transition hover:border-zinc-600 cursor-pointer"
-                  >
-                    <div className="font-medium text-sm mb-1">
-                      {comment.author}
-                    </div>
-                    <div className="mb-4 prose prose-invert max-w-none prose-pre:bg-zinc-800 prose-pre:border prose-pre:border-zinc-700 prose-p:text-white">
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        className="mb-4 text-sm"
-                      >
-                        {comment.body || ""}
-                      </ReactMarkdown>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <CommentSection issue={issue} />
             <AddCommentForm
               owner={owner}
               repo={repo}
               issueNumber={issueNumber}
+              onCommentAdded={newCommentAddedToIssue}
             />
           </div>
         </div>

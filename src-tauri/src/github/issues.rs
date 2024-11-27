@@ -3,14 +3,24 @@ use dotenvy::dotenv;
 use octocrab::models::issues::Issue;
 use octocrab::params;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::env;
 use std::sync::Mutex;
+use std::{collections::HashMap, sync::Arc};
 use tauri::{command, State};
+
+// pub struct IssuesCache {
+//     cache: Mutex<HashMap<String, (Vec<IssueData>, DateTime<Utc>)>>,
+// }
 
 #[derive(Debug, Default)]
 pub struct IssuesCache {
-    cache: Mutex<HashMap<String, (Vec<IssueData>, DateTime<Utc>)>>,
+    cache: Arc<Mutex<HashMap<String, (Vec<IssueData>, DateTime<Utc>)>>>,
+}
+
+impl IssuesCache {
+    pub fn get_cache(&self) -> &Arc<Mutex<HashMap<String, (Vec<IssueData>, DateTime<Utc>)>>> {
+        &self.cache
+    }
 }
 
 #[derive(Debug, Clone, Serialize)]

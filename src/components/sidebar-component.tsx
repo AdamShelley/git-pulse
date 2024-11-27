@@ -104,7 +104,7 @@ export function AppSidebar() {
                 <Collapsible defaultOpen className="group/collapsible">
                   <ContextMenu>
                     <ContextMenuTrigger>
-                      <CollapsibleTrigger className="pl-2 flex items-center justify-between w-full select-none">
+                      <CollapsibleTrigger className="pl-2 flex items-center justify-between w-full select-none text-zinc-400">
                         Recently Viewed
                         <ChevronDown
                           className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"
@@ -127,7 +127,7 @@ export function AppSidebar() {
                         <SidebarMenuItem key={issue.id}>
                           <SidebarMenuButton
                             asChild
-                            className="text-foreground/80"
+                            className="text-foreground/90"
                           >
                             <Link
                               to={`/issues/${issue.id}`}

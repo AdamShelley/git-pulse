@@ -1,9 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { invoke } from "@tauri-apps/api/core";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
@@ -11,11 +6,19 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import { CommentData, ExtendedIssueData } from "@/types/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { invoke } from "@tauri-apps/api/core";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 interface AddCommentProps {
   owner: string;
   repo: string;
   issueNumber: number;
+  onCommentAdded: (newComment: ExtendedIssueData) => void;
 }
 
 const formSchema = z.object({
@@ -25,7 +28,14 @@ const formSchema = z.object({
   body: z.string(),
 });
 
-const AddCommentForm = ({ owner, repo, issueNumber }: AddCommentProps) => {
+const AddCommentForm = ({
+  owner,
+  repo,
+  issueNumber,
+  onCommentAdded,
+}: AddCommentProps) => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,9 +47,20 @@ const AddCommentForm = ({ owner, repo, issueNumber }: AddCommentProps) => {
   });
 
   const submitComment = async (values: z.infer<typeof formSchema>) => {
-    const newComment = await invoke("add_issue_comment", values);
+    setIsLoading(true);
+    try {
+      const updatedIssue = await invoke<ExtendedIssueData>(
+        "add_issue_comment",
+        values
+      );
 
-    console.log(newComment);
+      onCommentAdded(updatedIssue);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+      form.reset?.();
+    }
   };
 
   return (
@@ -54,8 +75,9 @@ const AddCommentForm = ({ owner, repo, issueNumber }: AddCommentProps) => {
               <FormControl>
                 <Textarea
                   rows={3}
-                  className="w-full bg-zinc-800 border border-transparent rounded-lg p-3 focus:ring focus:ring-slate-500 focus:outline-none"
+                  className="bg-zinc-900 p-3 rounded-xs border border-transparent transition hover:border-zinc-600"
                   placeholder="Add a comment"
+                  disabled={isLoading}
                   {...field}
                 ></Textarea>
               </FormControl>
@@ -64,7 +86,7 @@ const AddCommentForm = ({ owner, repo, issueNumber }: AddCommentProps) => {
         />
 
         <div className="my-2 pt-2 flex align-center justify-end">
-          <Button className="" variant="default">
+          <Button className="" variant="default" disabled={isLoading}>
             Comment
           </Button>
         </div>
