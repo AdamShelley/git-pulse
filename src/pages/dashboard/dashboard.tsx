@@ -1,33 +1,28 @@
-import { Activity, AlertCircle, RefreshCcw } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useFetchIssues } from "@/hooks/use-create-fetch-issues";
 import RepoTabs from "./components/repo-tabs";
 import { ExtendedIssueData } from "@/types/types";
+import {
+  useFetchIssues,
+  useRefreshIssues,
+} from "@/hooks/use-create-fetch-issues";
+import { Loader2, RefreshCcw } from "lucide-react";
 
 const IssuesDashboard = () => {
   const repoNames = ["git-pulse", "test-repo"];
 
-  const { issues, loading, lastUpdated, error, refetch } = useFetchIssues({
+  const { mutate: refreshIssues, isPending } = useRefreshIssues();
+  const { data, isLoading, error } = useFetchIssues({
     repos: repoNames,
+    forceRefresh: false,
   });
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Activity className="w-6 h-6 animate-spin text-blue-500" />
-      </div>
-    );
-  }
+  const { issues, lastUpdated } = data || {};
 
-  if (error) {
-    return (
-      <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>{error}</AlertDescription>
-      </Alert>
-    );
-  }
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading issues</div>;
+
+  const handleRefresh = () => {
+    refreshIssues({ repos: repoNames });
+  };
 
   return (
     <div className="p-1 max-w-4xl mx-auto mt-4">
@@ -35,6 +30,7 @@ const IssuesDashboard = () => {
         <RepoTabs
           issues={issues as ExtendedIssueData[]}
           repoNames={repoNames}
+          loading={isPending}
         />
       </div>
       <div className="mt-5 p-1">
@@ -43,7 +39,7 @@ const IssuesDashboard = () => {
             <p>Last updated: {new Date(lastUpdated).toLocaleString()}</p>
             <RefreshCcw
               className="size-4 text-muted-foreground cursor-pointer hover:text-foreground transition"
-              onClick={refetch}
+              onClick={handleRefresh}
             />
           </div>
         )}

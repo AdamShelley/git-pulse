@@ -7,18 +7,15 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { CommentData, ExtendedIssueData } from "@/types/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { invoke } from "@tauri-apps/api/core";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useComments } from "../api/use-comments";
 
 interface AddCommentProps {
   owner: string;
   repo: string;
   issueNumber: number;
-  onCommentAdded: (newComment: ExtendedIssueData) => void;
 }
 
 const formSchema = z.object({
@@ -28,13 +25,8 @@ const formSchema = z.object({
   body: z.string(),
 });
 
-const AddCommentForm = ({
-  owner,
-  repo,
-  issueNumber,
-  onCommentAdded,
-}: AddCommentProps) => {
-  const [isLoading, setIsLoading] = useState(false);
+const AddCommentForm = ({ owner, repo, issueNumber }: AddCommentProps) => {
+  const { addComment, isCommenting } = useComments(owner, repo, issueNumber);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -47,20 +39,14 @@ const AddCommentForm = ({
   });
 
   const submitComment = async (values: z.infer<typeof formSchema>) => {
-    setIsLoading(true);
-    try {
-      const updatedIssue = await invoke<ExtendedIssueData>(
-        "add_issue_comment",
-        values
-      );
-
-      onCommentAdded(updatedIssue);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-      form.reset?.();
-    }
+    addComment(values, {
+      onSuccess: () => {
+        form.reset();
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    });
   };
 
   return (
@@ -77,7 +63,7 @@ const AddCommentForm = ({
                   rows={3}
                   className="bg-zinc-900 p-3 rounded-xs border border-transparent transition hover:border-zinc-600"
                   placeholder="Add a comment"
-                  disabled={isLoading}
+                  disabled={isCommenting}
                   {...field}
                 ></Textarea>
               </FormControl>
@@ -86,7 +72,7 @@ const AddCommentForm = ({
         />
 
         <div className="my-2 pt-2 flex align-center justify-end">
-          <Button className="" variant="default" disabled={isLoading}>
+          <Button className="" variant="default" disabled={isCommenting}>
             Comment
           </Button>
         </div>

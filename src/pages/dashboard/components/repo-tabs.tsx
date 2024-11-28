@@ -7,16 +7,23 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { Pin } from "lucide-react";
+import { Loader2, Pin } from "lucide-react";
 import { useState } from "react";
 
 interface RepoTabsProps {
   issues: ExtendedIssueData[];
   repoNames: string[];
+  loading: boolean;
 }
 
-const RepoTabs = ({ issues, repoNames }: RepoTabsProps) => {
+const RepoTabs = ({ issues, repoNames, loading }: RepoTabsProps) => {
   const [pinnedRepos, setPinnedRepos] = useState<ExtendedIssueData[]>([]);
+
+  if (loading) {
+    return (
+      <Loader2 className="size-8 text-primary-muted mx-auto mt-8 animate animate-spin" />
+    );
+  }
 
   return (
     <Tabs defaultValue="all">
