@@ -5,6 +5,10 @@
   "windows": [
     "main"
   ],
+  "protocols":{
+    "name":"oauth",
+    "schemes":["tauri"]
+  },
   "permissions": [
     "core:default",
     "shell:allow-open",

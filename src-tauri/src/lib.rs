@@ -3,6 +3,10 @@ mod obsidian;
 mod recents;
 mod settings;
 
+use std::env;
+
+use dotenvy::dotenv;
+
 use github::issues::check_cache_status;
 use github::issues::fetch_issues;
 use github::issues::fetch_repos;
@@ -21,8 +25,13 @@ use recents::recents::save_recents;
 
 use github::interactions::add_issue_comment;
 
+use github::oauth::initiate_device_login;
+use github::oauth::poll_for_token;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    dotenv().expect("Failed to load .env file");
+
     tauri::Builder::default()
         .manage(IssuesCache::default())
         .plugin(tauri_plugin_log::Builder::new().build())
@@ -41,7 +50,9 @@ pub fn run() {
             load_recents,
             save_recents,
             get_cached_issue,
-            add_issue_comment
+            add_issue_comment,
+            initiate_device_login,
+            poll_for_token
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

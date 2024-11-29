@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import useRecentlyViewedStore from "@/stores/recently-viewed-store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import {
   ContextMenu,
@@ -34,6 +34,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "./ui/collapsible";
+import { Button } from "./ui/button";
+import { open } from "@tauri-apps/plugin-shell";
 
 const items = [
   {
@@ -53,9 +55,18 @@ const items = [
   },
 ];
 
+interface DevideCode {
+  device_code: string;
+  user_code: string;
+  verification_uri: string;
+  expires_in: number;
+  interval: number;
+}
+
 export function AppSidebar() {
   const navigate = useNavigate();
   const { viewedIssues } = useRecentlyViewedStore();
+  const [userCode, setUserCode] = useState<string | null>(null);
 
   const showRepos = () => {
     console.log("Navigating");
@@ -64,6 +75,41 @@ export function AppSidebar() {
 
   const clearViewed = async () => {
     await invoke("clear_recents");
+  };
+
+  const oauthLogin = async () => {
+    try {
+      const response = await invoke<DevideCode>("initiate_device_login");
+      setUserCode(response.user_code);
+
+      await open(response.verification_uri);
+
+      const pollInterval = setInterval(async () => {
+        try {
+          const token = await invoke<string>("poll_for_token", {
+            deviceCode: response.device_code,
+          });
+
+          console.log(token);
+
+          if (token) {
+            console.log("Got token", token);
+            clearInterval(pollInterval);
+            localStorage.setItem("token", token);
+            setUserCode(null);
+          }
+        } catch (error) {}
+      }, 15000);
+
+      setTimeout(() => {
+        clearInterval(pollInterval);
+        setUserCode(null);
+      }, response.expires_in * 1000);
+    } catch (error) {
+      console.error(error);
+      setUserCode(null);
+    } finally {
+    }
   };
 
   useEffect(() => {
@@ -146,7 +192,15 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarRail />
-      <SidebarFooter></SidebarFooter>
+      <SidebarFooter>
+        <div>
+          <p>
+            Enter this code on GitHub: <strong>{userCode}</strong>
+          </p>
+          <p>Follow the instructions in your browser to complete login</p>
+        </div>
+        <Button onClick={oauthLogin}>Github Login</Button>
+      </SidebarFooter>
     </Sidebar>
   );
 }
