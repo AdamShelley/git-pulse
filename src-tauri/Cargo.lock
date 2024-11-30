@@ -1498,6 +1498,7 @@ dependencies = [
  "tauri-plugin-dialog",
  "tauri-plugin-log",
  "tauri-plugin-shell",
+ "tauri-plugin-store",
  "tokio",
 ]
 
@@ -4730,6 +4731,21 @@ dependencies = [
  "tauri-plugin",
  "thiserror 1.0.69",
  "tokio",
+]
+
+[[package]]
+name = "tauri-plugin-store"
+version = "2.1.0"
+source = "git+https://github.com/tauri-apps/plugins-workspace.git?branch=v2#ab9a24b89b487e2dd507cb0e200932e43d0f3c73"
+dependencies = [
+ "dunce",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-plugin",
+ "thiserror 2.0.3",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]

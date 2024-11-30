@@ -5,14 +5,17 @@
   "windows": [
     "main"
   ],
-  "protocols":{
-    "name":"oauth",
-    "schemes":["tauri"]
+  "protocols": {
+    "name": "oauth",
+    "schemes": [
+      "tauri"
+    ]
   },
   "permissions": [
     "core:default",
     "shell:allow-open",
     "dialog:default",
-    "log:default"
+    "log:default",
+    "store:default"
   ]
 }

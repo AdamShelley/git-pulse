@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
+use serde_json::{self, json};
 use tauri::command;
+use tauri_plugin_store::{Store, StoreExt};
 
 #[derive(Serialize, Deserialize)]
 pub struct DeviceCodeResponse {
@@ -26,6 +28,11 @@ enum TokenOrError {
         error_description: Option<String>,
         interval: Option<u32>,
     },
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Clone)]
+pub struct AuthState {
+    token: String,
 }
 
 #[command]
@@ -56,7 +63,7 @@ pub async fn initiate_device_login() -> Result<DeviceCodeResponse, String> {
 }
 
 #[command]
-pub async fn poll_for_token(device_code: String) -> Result<String, String> {
+pub async fn poll_for_token(app: tauri::AppHandle, device_code: String) -> Result<String, String> {
     let client = reqwest::Client::new();
 
     let response = client
@@ -79,7 +86,19 @@ pub async fn poll_for_token(device_code: String) -> Result<String, String> {
         .map_err(|e| format!("Failed to parse response: {}", e))?;
 
     match response {
-        TokenOrError::Token(token) => Ok(token.access_token),
+        TokenOrError::Token(token) => {
+            let store = app
+                .store("auth.json")
+                .map_err(|e| format!("Failed to access store: {}", e))?;
+
+            store.set("github_token", json!(token.access_token.clone()));
+
+            store
+                .save()
+                .map_err(|e| format!("Failed to save token: {}", e))?;
+
+            Ok(token.access_token)
+        }
         TokenOrError::Error {
             error,
             error_description,
@@ -92,4 +111,17 @@ pub async fn poll_for_token(device_code: String) -> Result<String, String> {
             }
         }
     }
+}
+
+pub fn get_stored_token(app: &tauri::AppHandle) -> Result<String, String> {
+    let store = app
+        .store("auth.json")
+        .map_err(|e| format!("Failed to access store: {}", e))?;
+
+    store
+        .get("github_token")
+        .ok_or("No token found".to_string())
+        .as_str()
+        .ok_or("Token is not a string".to_string())
+        .map(String::from)
 }

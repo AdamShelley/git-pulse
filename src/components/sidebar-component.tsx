@@ -93,9 +93,7 @@ export function AppSidebar() {
           console.log(token);
 
           if (token) {
-            console.log("Got token", token);
             clearInterval(pollInterval);
-            localStorage.setItem("token", token);
             setUserCode(null);
           }
         } catch (error) {}

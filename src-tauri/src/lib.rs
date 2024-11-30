@@ -28,11 +28,14 @@ use github::interactions::add_issue_comment;
 use github::oauth::initiate_device_login;
 use github::oauth::poll_for_token;
 
+use tauri_plugin_store::StoreExt;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     dotenv().expect("Failed to load .env file");
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_store::Builder::new().build())
         .manage(IssuesCache::default())
         .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_dialog::init())
@@ -54,6 +57,11 @@ pub fn run() {
             initiate_device_login,
             poll_for_token
         ])
+        .setup(|app| {
+            // Initialize the store
+            let store = app.store("auth.json")?;
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
