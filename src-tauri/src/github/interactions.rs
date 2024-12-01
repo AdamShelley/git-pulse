@@ -1,49 +1,43 @@
 use super::issues::{CommentData, IssueData, IssuesCache};
+use super::oauth::get_stored_token;
 use chrono::Utc;
 use std::env;
-use tauri::{command, State};
+use tauri::{command, AppHandle, State};
 
 #[command]
 pub async fn add_issue_comment(
+    app: AppHandle,
     owner: String,
     repo: String,
     issue_number: i64,
     body: String,
     cache: State<'_, IssuesCache>,
 ) -> Result<IssueData, String> {
-    let token =
-        env::var("GITHUB_TOKEN").map_err(|_| "Github token not found in env".to_string())?;
+    let token = get_stored_token(&app)?;
 
     let octocrab = octocrab::OctocrabBuilder::new()
         .personal_token(token)
         .build()
         .map_err(|e| e.to_string())?;
 
-    let comment = octocrab
+    octocrab
         .issues(&owner, &repo)
         .create_comment(issue_number as u64, body)
         .await
         .map_err(|e| e.to_string())?;
 
-    // Ok(CommentData {
-    //     id: comment.id.0.try_into().unwrap_or_default(),
-    //     body: comment.body.unwrap_or_default(),
-    //     created_at: comment.created_at.to_rfc3339(),
-    //     updated_at: comment.updated_at.map(|t| t.to_rfc3339()),
-    //     author: comment.user.login,
-    // })
-    fetch_single_issue(owner, repo, issue_number, cache).await
+    fetch_single_issue(app, owner, repo, issue_number, cache).await
 }
 
 #[command]
 pub async fn fetch_single_issue(
+    app: AppHandle,
     owner: String,
     repo: String,
     issue_number: i64,
     cache: State<'_, IssuesCache>,
 ) -> Result<IssueData, String> {
-    let token =
-        env::var("GITHUB_TOKEN").map_err(|_| "Github token not found in env".to_string())?;
+    let token = get_stored_token(&app)?;
 
     let octocrab = octocrab::OctocrabBuilder::new()
         .personal_token(token)

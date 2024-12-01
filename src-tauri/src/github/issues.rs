@@ -1,3 +1,4 @@
+use super::oauth::get_stored_token;
 use chrono::{DateTime, Duration, Utc};
 use dotenvy::dotenv;
 use octocrab::models::issues::Issue;
@@ -6,11 +7,7 @@ use serde::{Deserialize, Serialize};
 use std::env;
 use std::sync::Mutex;
 use std::{collections::HashMap, sync::Arc};
-use tauri::{command, State};
-
-// pub struct IssuesCache {
-//     cache: Mutex<HashMap<String, (Vec<IssueData>, DateTime<Utc>)>>,
-// }
+use tauri::{command, AppHandle, State};
 
 #[derive(Debug, Default)]
 pub struct IssuesCache {
@@ -110,11 +107,12 @@ pub async fn check_cache_status<'a>(
 }
 
 #[command]
-pub async fn fetch_repos(username: String) -> Result<Vec<RepoData>, String> {
-    dotenv().map_err(|e| format!("Failed to load .env file: {}", e))?;
+pub async fn fetch_repos(app: AppHandle, username: String) -> Result<Vec<RepoData>, String> {
+    // dotenv().map_err(|e| format!("Failed to load .env file: {}", e))?;
 
-    let token =
-        env::var("GITHUB_TOKEN").map_err(|e| "Github token not found in env".to_string())?;
+    // let token =
+    //     env::var("GITHUB_TOKEN").map_err(|e| "Github token not found in env".to_string())?;
+    let token = get_stored_token(&app).map_err(|e| format!("Failed to get stored token: {}", e))?;
 
     let octocrab = octocrab::OctocrabBuilder::new()
         .personal_token(token)
@@ -171,6 +169,7 @@ pub async fn fetch_repos(username: String) -> Result<Vec<RepoData>, String> {
 
 #[command]
 pub async fn fetch_issues(
+    app: AppHandle,
     owner: String,
     repo: String,
     cache: State<'_, IssuesCache>,
@@ -188,11 +187,7 @@ pub async fn fetch_issues(
         }
     }
 
-    // let octocrab = octocrab::instance();
-    dotenv().map_err(|e| format!("Failed to load .env file: {}", e))?;
-
-    let token =
-        env::var("GITHUB_TOKEN").map_err(|_| "Github token not found in env".to_string())?;
+    let token = get_stored_token(&app).map_err(|e| format!("Failed to get stored token: {}", e))?;
 
     let octocrab = octocrab::OctocrabBuilder::new()
         .personal_token(token)

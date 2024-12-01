@@ -120,7 +120,7 @@ pub fn get_stored_token(app: &tauri::AppHandle) -> Result<String, String> {
 
     store
         .get("github_token")
-        .ok_or("No token found".to_string())
+        .ok_or("No token found".to_string())?
         .as_str()
         .ok_or("Token is not a string".to_string())
         .map(String::from)

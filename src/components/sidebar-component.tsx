@@ -14,7 +14,9 @@ import {
 import {
   ChevronDown,
   Home,
+  Loader2,
   LucideGitFork,
+  Plug,
   Plus,
   Search,
   Settings,
@@ -36,6 +38,7 @@ import {
 } from "./ui/collapsible";
 import { Button } from "./ui/button";
 import { open } from "@tauri-apps/plugin-shell";
+import { useAuthStore } from "@/stores/auth-store";
 
 const items = [
   {
@@ -66,6 +69,7 @@ interface DevideCode {
 export function AppSidebar() {
   const navigate = useNavigate();
   const { viewedIssues } = useRecentlyViewedStore();
+  const { isLoggedIn, checkAuth, isLoading, setLoggedIn } = useAuthStore();
   const [userCode, setUserCode] = useState<string | null>(null);
 
   const showRepos = () => {
@@ -82,6 +86,8 @@ export function AppSidebar() {
       const response = await invoke<DevideCode>("initiate_device_login");
       setUserCode(response.user_code);
 
+      await navigator.clipboard.writeText(response.user_code);
+
       await open(response.verification_uri);
 
       const pollInterval = setInterval(async () => {
@@ -90,10 +96,9 @@ export function AppSidebar() {
             deviceCode: response.device_code,
           });
 
-          console.log(token);
-
           if (token) {
             clearInterval(pollInterval);
+            setLoggedIn(true);
             setUserCode(null);
           }
         } catch (error) {}
@@ -109,6 +114,10 @@ export function AppSidebar() {
     } finally {
     }
   };
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     useRecentlyViewedStore.getState().initialize();
@@ -191,13 +200,29 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarRail />
       <SidebarFooter>
-        <div>
-          <p>
-            Enter this code on GitHub: <strong>{userCode}</strong>
-          </p>
-          <p>Follow the instructions in your browser to complete login</p>
-        </div>
-        <Button onClick={oauthLogin}>Github Login</Button>
+        {isLoading && (
+          <div className="flex align-center justify start">
+            <Loader2 className="text-zinc-300 mr-1 size-4 animate animate-spin" />
+            <span className="text-xs">Checking Authentication</span>
+          </div>
+        )}
+        {isLoggedIn && !isLoading ? (
+          <div className="flex align-center justify start">
+            <Plug className="text-zinc-300 size-4 mr-1 " />
+            <span className="text-xs">Connected</span>
+          </div>
+        ) : null}
+        {!isLoggedIn && !isLoading ? (
+          <>
+            <div>
+              <p>
+                Enter this code on GitHub: <strong>{userCode}</strong>
+              </p>
+              <p>Follow the instructions in your browser to complete login</p>
+            </div>
+            <Button onClick={oauthLogin}>Github Login</Button>
+          </>
+        ) : null}
       </SidebarFooter>
     </Sidebar>
   );

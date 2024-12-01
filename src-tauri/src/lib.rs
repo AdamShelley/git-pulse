@@ -1,3 +1,4 @@
+mod check_auth;
 mod github;
 mod obsidian;
 mod recents;
@@ -55,7 +56,8 @@ pub fn run() {
             get_cached_issue,
             add_issue_comment,
             initiate_device_login,
-            poll_for_token
+            poll_for_token,
+            check_auth::check_auth
         ])
         .setup(|app| {
             // Initialize the store
