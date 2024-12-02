@@ -4,7 +4,7 @@ import {
   useFetchIssues,
   useRefreshIssues,
 } from "@/hooks/use-create-fetch-issues";
-import { Loader2, RefreshCcw } from "lucide-react";
+import { Loader, Loader2, RefreshCcw } from "lucide-react";
 
 const IssuesDashboard = () => {
   const repoNames = ["git-pulse", "test-repo"];
@@ -17,7 +17,6 @@ const IssuesDashboard = () => {
 
   const { issues, lastUpdated } = data || {};
 
-  if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading issues</div>;
 
   const handleRefresh = () => {
@@ -27,11 +26,17 @@ const IssuesDashboard = () => {
   return (
     <div className="p-1 max-w-4xl mx-auto mt-4">
       <div className="space-y-4">
-        <RepoTabs
-          issues={issues as ExtendedIssueData[]}
-          repoNames={repoNames}
-          loading={isPending}
-        />
+        {issues ? (
+          <RepoTabs
+            issues={issues as ExtendedIssueData[]}
+            repoNames={repoNames}
+            loading={isPending}
+          />
+        ) : (
+          <>
+            <Loader2 className="size-8 text-muted-foreground" />
+          </>
+        )}
       </div>
       <div className="mt-5 p-1">
         {lastUpdated && (

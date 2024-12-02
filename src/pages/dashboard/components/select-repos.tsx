@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const SelectRepos = () => {
   const [repos, setRepos] = useState<Repository[]>([]);
@@ -40,6 +41,7 @@ const SelectRepos = () => {
 
   return (
     <div>
+      <Button className="">Select Repos</Button>
       <Table>
         <TableCaption>
           {loading && <Loader2 className="animate animate-spin w-5 h-5" />}
