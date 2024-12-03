@@ -39,6 +39,7 @@ import {
 import { Button } from "./ui/button";
 import { open } from "@tauri-apps/plugin-shell";
 import { useAuthStore } from "@/stores/auth-store";
+import useSettingsStore from "@/stores/settings-store";
 
 const items = [
   {
@@ -70,6 +71,7 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const { viewedIssues } = useRecentlyViewedStore();
   const { isLoggedIn, checkAuth, isLoading, setLoggedIn } = useAuthStore();
+  const { recently_viewed_option, updateSettings } = useSettingsStore();
   const [userCode, setUserCode] = useState<string | null>(null);
 
   const showRepos = () => {
@@ -115,6 +117,10 @@ export function AppSidebar() {
     }
   };
 
+  const updateViewedOption = () => {
+    updateSettings({ recently_viewed_option: !recently_viewed_option });
+  };
+
   useEffect(() => {
     checkAuth();
   }, []);
@@ -154,7 +160,11 @@ export function AppSidebar() {
             </SidebarMenu>
             <SidebarMenu className="mt-5 text-zinc-400 font-semibold">
               <SidebarMenuItem>
-                <Collapsible defaultOpen className="group/collapsible">
+                <Collapsible
+                  open={recently_viewed_option}
+                  onOpenChange={updateViewedOption}
+                  className="group/collapsible"
+                >
                   <ContextMenu>
                     <ContextMenuTrigger>
                       <CollapsibleTrigger className="pl-2 flex items-center justify-between w-full select-none text-zinc-400">

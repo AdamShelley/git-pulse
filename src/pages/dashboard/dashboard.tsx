@@ -4,7 +4,7 @@ import {
   useFetchIssues,
   useRefreshIssues,
 } from "@/hooks/use-create-fetch-issues";
-import { Loader, Loader2, RefreshCcw } from "lucide-react";
+import { Loader2, RefreshCcw } from "lucide-react";
 
 const IssuesDashboard = () => {
   const repoNames = ["git-pulse", "test-repo"];

@@ -4,10 +4,18 @@ import { SidebarProvider } from "./components/ui/sidebar";
 import { AppSidebar } from "./components/sidebar-component";
 import Header from "./components/header";
 import { Toaster } from "sonner";
+import { useEffect } from "react";
+import useSettingsStore from "./stores/settings-store";
 
 const queryClient = new QueryClient();
 
 export default function Root() {
+  const { loadSettings } = useSettingsStore();
+
+  useEffect(() => {
+    loadSettings();
+  }, []);
+
   return (
     <>
       <QueryClientProvider client={queryClient}>

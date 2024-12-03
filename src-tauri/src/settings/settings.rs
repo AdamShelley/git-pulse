@@ -3,12 +3,22 @@ use std::fs;
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+fn default_theme() -> String {
+    "system".to_string()
+}
+
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Settings {
-    theme: String,
-    notifications: bool,
-    font_size: String,
-    file_directory: String,
+    #[serde(default = "default_theme")]
+    pub theme: String,
+    #[serde(default)]
+    pub notifications: bool,
+    #[serde(default)]
+    pub font_size: String,
+    #[serde(default)]
+    pub file_directory: String,
+    #[serde(default)]
+    pub recently_viewed_option: bool,
 }
 
 impl Default for Settings {
@@ -18,6 +28,7 @@ impl Default for Settings {
             notifications: true,
             font_size: "medium".to_string(),
             file_directory: "".to_string(),
+            recently_viewed_option: false,
         }
     }
 }
@@ -38,7 +49,32 @@ pub async fn load_settings(app: AppHandle) -> Result<Settings, String> {
 pub async fn save_settings(app: AppHandle, settings: Settings) -> Result<(), String> {
     let settings_path = get_settings_path(&app)?;
 
-    let json = serde_json::to_string_pretty(&settings)
+    let current_settings = match fs::read_to_string(&settings_path) {
+        Ok(data) => serde_json::from_str(&data).unwrap_or_default(),
+        Err(_) => Settings::default(),
+    };
+
+    let new_settings = Settings {
+        theme: if settings.theme.is_empty() {
+            current_settings.theme
+        } else {
+            settings.theme
+        },
+        notifications: settings.notifications,
+        font_size: if settings.font_size.is_empty() {
+            current_settings.font_size
+        } else {
+            settings.font_size
+        },
+        file_directory: if settings.file_directory.is_empty() {
+            current_settings.file_directory
+        } else {
+            settings.file_directory
+        },
+        recently_viewed_option: settings.recently_viewed_option,
+    };
+
+    let json = serde_json::to_string_pretty(&new_settings)
         .map_err(|e| format!("Failed to serialize settings: {}", e))?;
 
     fs::write(&settings_path, json).map_err(|e| format!("Failed to write settings: {}", e))

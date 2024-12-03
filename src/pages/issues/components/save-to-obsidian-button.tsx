@@ -1,16 +1,9 @@
 import { invoke } from "@tauri-apps/api/core";
-import { open } from "@tauri-apps/plugin-dialog";
 import { Button } from "@/components/ui/button";
-import { Issue, IssueData } from "@/types/types";
+import { IssueData } from "@/types/types";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
-import {
-  Download,
-  FolderArchive,
-  FolderOpen,
-  SeparatorVerticalIcon,
-  Vault,
-} from "lucide-react";
+import { Download, SeparatorVerticalIcon } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -24,8 +17,6 @@ interface IssueProps {
 }
 
 const SaveToObsidianButton = ({ issue }: IssueProps) => {
-  const [owner, setOwner] = useState("");
-  const [repo, setRepo] = useState("");
   const [issues, setIssues] = useState([issue]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);

@@ -35,13 +35,17 @@ const SelectRepos = () => {
     }
   }, []);
 
+  const submitRepos = () => {
+    console.log("Selected repos:", selectedRepos);
+  };
+
   useEffect(() => {
     fetchRepos();
   }, []);
 
   return (
     <div>
-      <Button className="">Select Repos</Button>
+      <Button onClick={submitRepos}>Select Repos</Button>
       <Table>
         <TableCaption>
           {loading && <Loader2 className="animate animate-spin w-5 h-5" />}

@@ -41,7 +41,7 @@ const RepoTabs = ({ issues, repoNames, loading }: RepoTabsProps) => {
 
       <TabsContent value="all" className="space-y-2">
         {issues.map((issue) => (
-          <div>
+          <div key={issue.title}>
             <ContextMenu>
               <ContextMenuTrigger>
                 <IssueCard
