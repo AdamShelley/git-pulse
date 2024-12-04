@@ -24,8 +24,8 @@ const IssuesDashboard = () => {
   };
 
   return (
-    <div className="p-1 max-w-4xl mx-auto mt-4">
-      <div className="space-y-4">
+    <div className="flex flex-col p-1 max-w-4xl mx-auto h-[calc(100%-52px)]">
+      <div className="flex-1 min-h-0 overflow-auto">
         {issues ? (
           <RepoTabs
             issues={issues as ExtendedIssueData[]}
@@ -33,12 +33,12 @@ const IssuesDashboard = () => {
             loading={isPending}
           />
         ) : (
-          <>
+          <div className="flex justify-center items-center h-full">
             <Loader2 className="size-8 text-muted-foreground" />
-          </>
+          </div>
         )}
       </div>
-      <div className="mt-5 p-1">
+      <div className="flex-shrink-0">
         {lastUpdated && (
           <div className="text-sm text-gray-500 flex justify-between">
             <p>Last updated: {new Date(lastUpdated).toLocaleString()}</p>

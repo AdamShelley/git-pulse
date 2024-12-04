@@ -6,6 +6,7 @@ import IssuePage from "./pages/issues/issue-page";
 import Root from "./root";
 import Settings from "./pages/settings/settings";
 import SelectRepos from "./pages/dashboard/components/select-repos";
+import CommentPage from "./pages/comments/comment-page";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
       {
         path: "/issues/:id",
         element: <IssuePage />,
+      },
+      {
+        path: "/issues/:id/comment/:commentId",
+        element: <CommentPage />,
       },
       {
         path: "/settings",

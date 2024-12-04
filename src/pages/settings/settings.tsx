@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import useSettingsStore from "@/stores/settings-store";
 
 interface Settings {
   theme: string;
@@ -42,10 +43,10 @@ const Settings = () => {
   const loadSettings = async () => {
     console.log("Loading settings");
     try {
-      const savedSettings = await invoke<Settings>("load_settings");
+      const settings = useSettingsStore.getState();
 
-      console.log(savedSettings);
-      setSettings(savedSettings);
+      console.log(settings);
+      setSettings(settings);
     } catch (error) {
       console.error("Failed to load settings:", error);
     }
@@ -157,8 +158,14 @@ const Settings = () => {
           <Button onClick={selectVaultPath} variant="outline" className="">
             <FolderOpen className="h-4 w-4" />
           </Button>
-          <label className="font-medium text-sm" htmlFor="vaultPath">
+          <label
+            className="font-medium text-sm flex flex-col"
+            htmlFor="vaultPath"
+          >
             Select Obsidian vault path
+            <span className="text-zinc-400">
+              Currently selected path: {settings.file_directory}
+            </span>
           </label>
         </div>
 

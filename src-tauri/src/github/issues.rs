@@ -1,10 +1,8 @@
-use super::oauth::get_stored_token;
+use super::github_client::get_client;
 use chrono::{DateTime, Duration, Utc};
-use dotenvy::dotenv;
 use octocrab::models::issues::Issue;
 use octocrab::params;
 use serde::{Deserialize, Serialize};
-use std::env;
 use std::sync::Mutex;
 use std::{collections::HashMap, sync::Arc};
 use tauri::{command, AppHandle, State};
@@ -18,19 +16,6 @@ impl IssuesCache {
     pub fn get_cache(&self) -> &Arc<Mutex<HashMap<String, (Vec<IssueData>, DateTime<Utc>)>>> {
         &self.cache
     }
-}
-
-#[derive(Debug, Clone, Serialize)]
-pub struct RepoData {
-    pub name: String,
-    pub full_name: String,
-    pub description: Option<String>,
-    pub created_at: String,
-    pub updated_at: String,
-    pub language: Option<String>,
-    pub stargazers_count: u32,
-    pub fork: bool,
-    pub visibility: String,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -107,69 +92,7 @@ pub async fn check_cache_status<'a>(
 }
 
 #[command]
-pub async fn fetch_repos(app: AppHandle, username: String) -> Result<Vec<RepoData>, String> {
-    // dotenv().map_err(|e| format!("Failed to load .env file: {}", e))?;
-
-    // let token =
-    //     env::var("GITHUB_TOKEN").map_err(|e| "Github token not found in env".to_string())?;
-    let token = get_stored_token(&app).map_err(|e| format!("Failed to get stored token: {}", e))?;
-
-    let octocrab = octocrab::OctocrabBuilder::new()
-        .personal_token(token)
-        .build()
-        .map_err(|e| e.to_string())?;
-
-    let mut all_repos = Vec::new();
-    let mut page = octocrab
-        .current()
-        .list_repos_for_authenticated_user()
-        .per_page(100)
-        .send()
-        .await
-        .map_err(|e| e.to_string())?;
-
-    loop {
-        let repos: Vec<RepoData> = page
-            .items
-            .into_iter()
-            .map(|repo| RepoData {
-                name: repo.name,
-                full_name: repo.full_name.expect("Repository must have a full name"),
-                description: repo.description,
-                created_at: repo
-                    .created_at
-                    .expect("Repository must have a creation date")
-                    .to_rfc3339(),
-                updated_at: repo
-                    .updated_at
-                    .expect("Repository must have an update date")
-                    .to_rfc3339(),
-                language: repo.language.and_then(|v| v.as_str().map(String::from)),
-                stargazers_count: repo
-                    .stargazers_count
-                    .expect("Repository must have a stargazers count"),
-                fork: repo.fork.unwrap_or(false),
-                visibility: repo.visibility.unwrap_or_else(|| "private".to_string()),
-            })
-            .collect();
-
-        all_repos.extend(repos);
-
-        match octocrab
-            .get_page::<octocrab::models::Repository>(&page.next)
-            .await
-            .map_err(|e| e.to_string())?
-        {
-            Some(next_page) => page = next_page,
-            None => break,
-        }
-    }
-    Ok(all_repos)
-}
-
-#[command]
 pub async fn fetch_issues(
-    app: AppHandle,
     owner: String,
     repo: String,
     cache: State<'_, IssuesCache>,
@@ -187,12 +110,7 @@ pub async fn fetch_issues(
         }
     }
 
-    let token = get_stored_token(&app).map_err(|e| format!("Failed to get stored token: {}", e))?;
-
-    let octocrab = octocrab::OctocrabBuilder::new()
-        .personal_token(token)
-        .build()
-        .map_err(|e| e.to_string())?;
+    let octocrab = get_client();
 
     let mut all_issues = Vec::new();
     let page = octocrab
@@ -203,9 +121,6 @@ pub async fn fetch_issues(
         .send()
         .await
         .map_err(|e| e.to_string())?;
-
-    // First, collect initial issue data
-    // let mut issue_numbers: Vec<i64> = page.items.iter().map(|issue| issue.number as i64).collect();
 
     let mut processed_issues: Vec<IssueData> =
         page.items.into_iter().map(IssueData::from).collect();

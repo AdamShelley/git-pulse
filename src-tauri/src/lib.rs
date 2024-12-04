@@ -8,11 +8,13 @@ use std::env;
 
 use dotenvy::dotenv;
 
+use github::github_client::init_github_client;
 use github::issues::check_cache_status;
 use github::issues::fetch_issues;
-use github::issues::fetch_repos;
+// use github::issues::fetch_repos;
 use github::issues::get_cached_issue;
 use github::issues::IssuesCache;
+use github::repos::fetch_repos;
 
 use obsidian::save::save_to_obsidian;
 
@@ -61,7 +63,12 @@ pub fn run() {
         ])
         .setup(|app| {
             // Initialize the store
-            let store = app.store("auth.json")?;
+            let app_handle = app.handle();
+            tauri::async_runtime::block_on(async move {
+                init_github_client(&app_handle).expect("Failed to initialize GitHub client");
+            });
+
+            let _store = app.store("auth.json")?;
             Ok(())
         })
         .run(tauri::generate_context!())

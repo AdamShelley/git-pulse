@@ -7,7 +7,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { Loader2, Pin } from "lucide-react";
+import { Loader2, Pin, PinIcon } from "lucide-react";
 import { useState } from "react";
 
 interface RepoTabsProps {
@@ -27,11 +27,11 @@ const RepoTabs = ({ issues, repoNames, loading }: RepoTabsProps) => {
 
   return (
     <Tabs defaultValue="all">
-      {pinnedRepos.map((issue) => (
-        <p key={issue.title}>{issue.title}</p>
-      ))}
       <TabsList className="mb-2">
         <TabsTrigger value="all">All</TabsTrigger>
+        <TabsTrigger value="pinned">
+          <PinIcon className="text- size-3 mr-1 text-foreground-muted" /> Pinned
+        </TabsTrigger>
         {repoNames.map((repo) => (
           <TabsTrigger key={repo} value={repo} className="bg-background">
             {repo}
@@ -61,6 +61,30 @@ const RepoTabs = ({ issues, repoNames, loading }: RepoTabsProps) => {
               </ContextMenuContent>
             </ContextMenu>
           </div>
+        ))}
+      </TabsContent>
+
+      <TabsContent value="pinned" className="space-y-2">
+        {pinnedRepos.map((issue) => (
+          <ContextMenu>
+            <ContextMenuTrigger>
+              <IssueCard issue={issue} key={issue.title} />
+            </ContextMenuTrigger>
+            <ContextMenuContent>
+              <ContextMenuItem
+                className="text-primary"
+                onClick={() =>
+                  setPinnedRepos((prev) =>
+                    prev.filter((pinnedIssue) => pinnedIssue !== issue)
+                  )
+                }
+              >
+                <Pin className="size-3 mr-2 text-primary-muted" />
+                Unpin
+              </ContextMenuItem>
+              <ContextMenuItem>Hide</ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
         ))}
       </TabsContent>
 

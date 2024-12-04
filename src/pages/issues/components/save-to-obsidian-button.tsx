@@ -22,7 +22,7 @@ const SaveToObsidianButton = ({ issue }: IssueProps) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
 
-  const { file_directory: vaultPath, loadSettings } = useSettingsStore();
+  const { file_directory: vaultPath } = useSettingsStore();
 
   const validateAndFormatIssue = (rawIssue: IssueData) => {
     // Format the issue with correct field names to match Rust struct
@@ -69,10 +69,6 @@ const SaveToObsidianButton = ({ issue }: IssueProps) => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    loadSettings();
-  });
 
   return (
     <div className="mt-4 w-full flex justify-end">

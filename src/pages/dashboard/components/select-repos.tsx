@@ -22,9 +22,7 @@ const SelectRepos = () => {
   const fetchRepos = useCallback(async () => {
     setLoading(true);
     try {
-      const fetchedRepos: Repository[] = await invoke("fetch_repos", {
-        username: "AdamShelley",
-      });
+      const fetchedRepos: Repository[] = await invoke("fetch_repos");
       console.log(fetchedRepos);
       fetchedRepos.sort((a, b) => b.updated_at.localeCompare(a.updated_at));
       setRepos(fetchedRepos);
