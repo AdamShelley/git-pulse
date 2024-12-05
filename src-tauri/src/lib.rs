@@ -11,10 +11,11 @@ use dotenvy::dotenv;
 use github::github_client::init_github_client;
 use github::issues::check_cache_status;
 use github::issues::fetch_issues;
-// use github::issues::fetch_repos;
 use github::issues::get_cached_issue;
+use github::issues::get_pinned_repos;
+use github::issues::save_pinned_repos;
+
 use github::issues::IssuesCache;
-use github::repos::fetch_repos;
 
 use obsidian::save::save_to_obsidian;
 
@@ -30,6 +31,10 @@ use github::interactions::add_issue_comment;
 
 use github::oauth::initiate_device_login;
 use github::oauth::poll_for_token;
+
+use github::repos::add_repos_to_store;
+use github::repos::fetch_repos;
+use github::repos::get_repos_from_store;
 
 use tauri_plugin_store::StoreExt;
 
@@ -59,7 +64,11 @@ pub fn run() {
             add_issue_comment,
             initiate_device_login,
             poll_for_token,
-            check_auth::check_auth
+            check_auth::check_auth,
+            add_repos_to_store,
+            get_repos_from_store,
+            get_pinned_repos,
+            save_pinned_repos
         ])
         .setup(|app| {
             // Initialize the store
@@ -69,6 +78,7 @@ pub fn run() {
             });
 
             let _store = app.store("auth.json")?;
+            let _repo_store = app.store("repos.json")?;
             Ok(())
         })
         .run(tauri::generate_context!())

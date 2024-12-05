@@ -20,8 +20,15 @@ export const useFetchIssues = ({
       const allIssues = await Promise.all(
         repos.map((repo) => fetchIssuesForRepo(owner, repo, forceRefresh))
       );
+
       return {
-        issues: allIssues.flat(),
+        issues: allIssues
+          .flat()
+          .sort(
+            (a, b) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+          ),
         lastUpdated: new Date().toISOString(),
       };
     },

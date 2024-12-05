@@ -4,12 +4,23 @@ use octocrab::models::issues::Issue;
 use octocrab::params;
 use serde::{Deserialize, Serialize};
 use std::sync::Mutex;
-use std::{collections::HashMap, sync::Arc};
-use tauri::{command, AppHandle, State};
+use std::{collections::HashMap, fs, path::PathBuf, sync::Arc};
+use tauri::{command, AppHandle, Manager, State};
 
 #[derive(Debug, Default)]
 pub struct IssuesCache {
     cache: Arc<Mutex<HashMap<String, (Vec<IssueData>, DateTime<Utc>)>>>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct PinnedRepos {
+    repos: Vec<String>,
+}
+
+impl Default for PinnedRepos {
+    fn default() -> Self {
+        Self { repos: Vec::new() }
+    }
 }
 
 impl IssuesCache {
@@ -176,4 +187,40 @@ pub async fn get_cached_issue(
     }
 
     Ok(None)
+}
+
+fn get_pinned_path(app: &AppHandle) -> Result<PathBuf, String> {
+    let config_dir = app
+        .path()
+        .app_config_dir()
+        .expect("failed to get config dir");
+
+    fs::create_dir_all(&config_dir).map_err(|e| e.to_string())?;
+
+    Ok(config_dir.join("pinned.json"))
+}
+
+#[command]
+pub async fn get_pinned_repos(app: AppHandle) -> Result<Vec<String>, String> {
+    let pinned_path = get_pinned_path(&app)?;
+
+    match fs::read_to_string(&pinned_path) {
+        Ok(contents) => {
+            let pinned: PinnedRepos = serde_json::from_str(&contents)
+                .map_err(|e| format!("Failed to parse pinned repos: {}", e))?;
+            Ok(pinned.repos)
+        }
+        Err(_) => Ok(Vec::new()),
+    }
+}
+
+#[command]
+pub async fn save_pinned_repos(app: AppHandle, repos: Vec<String>) -> Result<(), String> {
+    let pinned_path = get_pinned_path(&app)?;
+    let pinned = PinnedRepos { repos };
+
+    let json = serde_json::to_string_pretty(&pinned)
+        .map_err(|e| format!("Failed to serialize pinned repos: {}", e))?;
+
+    fs::write(&pinned_path, json).map_err(|e| e.to_string())
 }

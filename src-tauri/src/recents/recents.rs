@@ -27,7 +27,7 @@ impl Recents {
         self.items.insert(0, item);
 
         if self.items.len() > 5 {
-            self.items.truncate(10);
+            self.items.truncate(6);
         }
     }
 }

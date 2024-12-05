@@ -64,7 +64,7 @@ export interface IssueData {
   assignees: string[];
   comments: CommentData[];
   creator: string;
-  id?: number;
+  id?: number | string;
 }
 
 export interface ExtendedIssueData extends IssueData {

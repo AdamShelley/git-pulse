@@ -8,7 +8,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { Loader2, Pin, PinIcon } from "lucide-react";
-import { useState } from "react";
+import { usePinnedReposStore } from "@/stores/pinned-repo-store";
 
 interface RepoTabsProps {
   issues: ExtendedIssueData[];
@@ -17,13 +17,25 @@ interface RepoTabsProps {
 }
 
 const RepoTabs = ({ issues, repoNames, loading }: RepoTabsProps) => {
-  const [pinnedRepos, setPinnedRepos] = useState<ExtendedIssueData[]>([]);
+  const { pinnedIds, setPinnedIds } = usePinnedReposStore();
+
+  const handlePin = async (issue: ExtendedIssueData) => {
+    await setPinnedIds((prev) => [...prev, String(issue.id)]);
+  };
+
+  const handleUnpin = async (issue: ExtendedIssueData) => {
+    await setPinnedIds((prev) => prev.filter((id) => id !== issue.id));
+  };
 
   if (loading) {
     return (
       <Loader2 className="size-8 text-primary-muted mx-auto mt-8 animate animate-spin" />
     );
   }
+
+  const pinnedIssues = issues.filter((issue) =>
+    pinnedIds.includes(String(issue.id))
+  );
 
   return (
     <Tabs defaultValue="all">
@@ -52,7 +64,7 @@ const RepoTabs = ({ issues, repoNames, loading }: RepoTabsProps) => {
               <ContextMenuContent>
                 <ContextMenuItem
                   className="text-primary"
-                  onClick={() => setPinnedRepos((prev) => [...prev, issue])}
+                  onClick={() => handlePin(issue)}
                 >
                   <Pin className="size-3 mr-2 text-primary-muted" />
                   Pin
@@ -65,7 +77,7 @@ const RepoTabs = ({ issues, repoNames, loading }: RepoTabsProps) => {
       </TabsContent>
 
       <TabsContent value="pinned" className="space-y-2">
-        {pinnedRepos.map((issue) => (
+        {pinnedIssues.map((issue) => (
           <ContextMenu>
             <ContextMenuTrigger>
               <IssueCard issue={issue} key={issue.title} />
@@ -73,11 +85,7 @@ const RepoTabs = ({ issues, repoNames, loading }: RepoTabsProps) => {
             <ContextMenuContent>
               <ContextMenuItem
                 className="text-primary"
-                onClick={() =>
-                  setPinnedRepos((prev) =>
-                    prev.filter((pinnedIssue) => pinnedIssue !== issue)
-                  )
-                }
+                onClick={() => handleUnpin(issue)}
               >
                 <Pin className="size-3 mr-2 text-primary-muted" />
                 Unpin
@@ -101,7 +109,7 @@ const RepoTabs = ({ issues, repoNames, loading }: RepoTabsProps) => {
             <ContextMenuContent>
               <ContextMenuItem
                 className="text-primary"
-                onClick={() => setPinnedRepos((prev) => [...prev, issue])}
+                onClick={() => handlePin(issue)}
               >
                 <Pin className="size-3 mr-2 text-primary-muted" />
                 Pin

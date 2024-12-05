@@ -1,6 +1,8 @@
 use super::github_client::get_client;
 use serde::Serialize;
+use serde_json::json;
 use tauri::{command, AppHandle};
+use tauri_plugin_store::{Store, StoreExt};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct RepoData {
@@ -68,8 +70,32 @@ pub async fn fetch_repos(app: AppHandle) -> Result<Vec<RepoData>, String> {
 }
 
 #[command]
-pub async fn add_repos(app: AppHandle, repos: Vec<RepoData>) -> Result<(), String> {
-    let store = app.store("repos.json").map_err(|e| e.to_string())?;
-    store.set("repos", repos).await.map_err(|e| e.to_string())?;
+pub async fn add_repos_to_store(app: AppHandle, selected_repos: Vec<String>) -> Result<(), String> {
+    let store = app
+        .store("repos.json")
+        .map_err(|e| format!("Failed to access store: {}", e))?;
+
+    store.set("repos_list", json!(selected_repos));
+
+    store
+        .save()
+        .map_err(|e| format!("Failed to save token: {}", e))?;
+
     Ok(())
+}
+
+#[command]
+pub async fn get_repos_from_store(app: AppHandle) -> Result<Vec<String>, String> {
+    let store = app
+        .store("repos.json")
+        .map_err(|e| format!("Failed to access store: {}", e))?;
+
+    let repos = store.get("repos_list").unwrap_or_default();
+
+    Ok(repos
+        .as_array()
+        .unwrap_or(&vec![])
+        .iter()
+        .map(|v| v.as_str().unwrap_or_default().to_string())
+        .collect())
 }
