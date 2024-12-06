@@ -78,47 +78,55 @@ const RepoTabs = ({ issues, repoNames, loading }: RepoTabsProps) => {
 
       <TabsContent value="pinned" className="space-y-2">
         {pinnedIssues.map((issue) => (
-          <ContextMenu>
-            <ContextMenuTrigger>
-              <IssueCard issue={issue} key={issue.title} />
-            </ContextMenuTrigger>
-            <ContextMenuContent>
-              <ContextMenuItem
-                className="text-primary"
-                onClick={() => handleUnpin(issue)}
-              >
-                <Pin className="size-3 mr-2 text-primary-muted" />
-                Unpin
-              </ContextMenuItem>
-              <ContextMenuItem>Hide</ContextMenuItem>
-            </ContextMenuContent>
-          </ContextMenu>
+          <div key={issue.title}>
+            <ContextMenu>
+              <ContextMenuTrigger>
+                <IssueCard issue={issue} key={issue.title} />
+              </ContextMenuTrigger>
+              <ContextMenuContent>
+                <ContextMenuItem
+                  className="text-primary"
+                  onClick={() => handleUnpin(issue)}
+                >
+                  <Pin className="size-3 mr-2 text-primary-muted" />
+                  Unpin
+                </ContextMenuItem>
+                <ContextMenuItem>Hide</ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
+          </div>
         ))}
       </TabsContent>
 
-      {issues.map((issue) => (
-        <TabsContent
-          value={issue.repoName}
-          key={issue.title}
-          className="space-y-2"
-        >
-          <ContextMenu>
-            <ContextMenuTrigger>
-              <IssueCard issue={issue as ExtendedIssueData} key={issue.title} />
-            </ContextMenuTrigger>
-            <ContextMenuContent>
-              <ContextMenuItem
-                className="text-primary"
-                onClick={() => handlePin(issue)}
-              >
-                <Pin className="size-3 mr-2 text-primary-muted" />
-                Pin
-              </ContextMenuItem>
-              <ContextMenuItem>Hide</ContextMenuItem>
-            </ContextMenuContent>
-          </ContextMenu>
-        </TabsContent>
-      ))}
+      {issues.map((issue) => {
+        console.log(issue);
+        return (
+          <TabsContent
+            value={issue.repoName}
+            key={issue.title}
+            className="space-y-2"
+          >
+            <ContextMenu>
+              <ContextMenuTrigger>
+                <IssueCard
+                  issue={issue as ExtendedIssueData}
+                  key={issue.title}
+                />
+              </ContextMenuTrigger>
+              <ContextMenuContent>
+                <ContextMenuItem
+                  className="text-primary"
+                  onClick={() => handlePin(issue)}
+                >
+                  <Pin className="size-3 mr-2 text-primary-muted" />
+                  Pin
+                </ContextMenuItem>
+                <ContextMenuItem>Hide</ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
+          </TabsContent>
+        );
+      })}
     </Tabs>
   );
 };

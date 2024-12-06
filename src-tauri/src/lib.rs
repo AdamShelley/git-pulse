@@ -10,11 +10,11 @@ use dotenvy::dotenv;
 
 use github::github_client::init_github_client;
 use github::issues::check_cache_status;
+use github::issues::create_new_issue;
 use github::issues::fetch_issues;
 use github::issues::get_cached_issue;
 use github::issues::get_pinned_repos;
 use github::issues::save_pinned_repos;
-
 use github::issues::IssuesCache;
 
 use obsidian::save::save_to_obsidian;
@@ -68,7 +68,8 @@ pub fn run() {
             add_repos_to_store,
             get_repos_from_store,
             get_pinned_repos,
-            save_pinned_repos
+            save_pinned_repos,
+            create_new_issue
         ])
         .setup(|app| {
             // Initialize the store

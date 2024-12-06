@@ -184,7 +184,7 @@ export function AppSidebar() {
                       </ContextMenuItem>
                     </ContextMenuContent>
                   </ContextMenu>
-                  <CollapsibleContent>
+                  <CollapsibleContent className="mt-2">
                     {viewedIssues.length > 0 &&
                       viewedIssues.map((issue) => (
                         <SidebarMenuItem key={issue.id}>

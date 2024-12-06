@@ -6,14 +6,17 @@ import Header from "./components/header";
 import { Toaster } from "sonner";
 import { useEffect } from "react";
 import useSettingsStore from "./stores/settings-store";
+import { usePinnedReposStore } from "./stores/pinned-repo-store";
 
 const queryClient = new QueryClient();
 
 export default function Root() {
   const { loadSettings } = useSettingsStore();
+  const { initialize } = usePinnedReposStore();
 
   useEffect(() => {
     loadSettings();
+    initialize();
   }, []);
 
   return (

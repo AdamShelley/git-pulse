@@ -224,3 +224,22 @@ pub async fn save_pinned_repos(app: AppHandle, repos: Vec<String>) -> Result<(),
 
     fs::write(&pinned_path, json).map_err(|e| e.to_string())
 }
+
+#[command]
+pub async fn create_new_issue(
+    owner: &str,
+    repo: &str,
+    title: &str,
+    body: &str,
+) -> Result<octocrab::models::issues::Issue, String> {
+    let octocrab = get_client();
+    let issue = octocrab
+        .issues(owner, repo)
+        .create(title)
+        .body(body)
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    Ok(issue)
+}
