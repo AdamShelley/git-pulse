@@ -1,5 +1,6 @@
+pub mod ais;
 mod check_auth;
-mod github;
+pub mod github;
 mod obsidian;
 mod recents;
 mod settings;

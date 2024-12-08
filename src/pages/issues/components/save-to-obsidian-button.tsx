@@ -11,6 +11,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import useSettingsStore from "@/stores/settings-store";
+import { ChangelogGenerator } from "./changelog-generator";
 
 interface IssueProps {
   issue: IssueData;
@@ -88,13 +89,14 @@ const SaveToObsidianButton = ({ issue }: IssueProps) => {
         </Tooltip>
         <Tooltip>
           <TooltipTrigger>
-            <Button
+            {/* <Button
               onClick={saveToObsidian}
               disabled={issues.length === 0 || !vaultPath}
               className="flex-1 mr-2"
             >
               <Download className="h-4 w-4" />
-            </Button>
+            </Button> */}
+            <ChangelogGenerator />
           </TooltipTrigger>
           <TooltipContent>Summarise for changelog</TooltipContent>
         </Tooltip>

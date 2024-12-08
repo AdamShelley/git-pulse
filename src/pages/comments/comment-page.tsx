@@ -5,7 +5,11 @@ type Props = {};
 const CommentPage = (props: Props) => {
   const state = useParams();
   console.log(state);
-  return <div>Comment Page</div>;
+  return (
+    <div>
+      <p>Comment</p>
+    </div>
+  );
 };
 
 export default CommentPage;
