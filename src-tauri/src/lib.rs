@@ -1,6 +1,6 @@
-pub mod ais;
+mod ais;
 mod check_auth;
-pub mod github;
+mod github;
 mod obsidian;
 mod recents;
 mod settings;
@@ -37,6 +37,8 @@ use github::repos::add_repos_to_store;
 use github::repos::fetch_repos;
 use github::repos::get_repos_from_store;
 
+use ais::changelog::generate_and_save_changelog;
+
 use tauri_plugin_store::StoreExt;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -70,7 +72,8 @@ pub fn run() {
             get_repos_from_store,
             get_pinned_repos,
             save_pinned_repos,
-            create_new_issue
+            create_new_issue,
+            generate_and_save_changelog
         ])
         .setup(|app| {
             // Initialize the store

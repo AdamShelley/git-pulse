@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { Button } from "@/components/ui/button";
-import { IssueData } from "@/types/types";
+import { Issue, IssueData } from "@/types/types";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { Download, SeparatorVerticalIcon } from "lucide-react";
@@ -11,7 +11,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import useSettingsStore from "@/stores/settings-store";
-import { ChangelogGenerator } from "./changelog-generator";
 
 interface IssueProps {
   issue: IssueData;
@@ -71,6 +70,30 @@ const SaveToObsidianButton = ({ issue }: IssueProps) => {
     }
   };
 
+  const generateChangelog = async () => {
+    try {
+      const formattedIssue = {
+        number: issue.number,
+        title: issue.title,
+        body: issue.body,
+        state: issue.state,
+        created_at: issue.created_at,
+        labels: issue.labels,
+        creator: issue.creator,
+      };
+
+      const result = await invoke("generate_and_save_changelog", {
+        issue: formattedIssue,
+        vaultPath,
+      });
+      console.log("Changelog generated:", result);
+      toast.success("Changelog entry generated");
+    } catch (e) {
+      console.error("Failed to generate changelog:", e);
+      toast.error("Failed to generate changelog entry");
+    }
+  };
+
   return (
     <div className="mt-4 w-full flex justify-end">
       <TooltipProvider>
@@ -89,14 +112,13 @@ const SaveToObsidianButton = ({ issue }: IssueProps) => {
         </Tooltip>
         <Tooltip>
           <TooltipTrigger>
-            {/* <Button
-              onClick={saveToObsidian}
+            <Button
+              onClick={generateChangelog}
               disabled={issues.length === 0 || !vaultPath}
               className="flex-1 mr-2"
             >
               <Download className="h-4 w-4" />
-            </Button> */}
-            <ChangelogGenerator />
+            </Button>
           </TooltipTrigger>
           <TooltipContent>Summarise for changelog</TooltipContent>
         </Tooltip>

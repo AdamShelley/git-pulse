@@ -96,7 +96,7 @@ const IssuesDashboard = () => {
           />
         ) : (
           <div className="flex justify-center items-center h-full">
-            <Loader2 className="size-8 text-muted-foreground" />
+            <Loader2 className="size-8 text-muted-foreground animate animate-spin" />
           </div>
         )}
       </div>

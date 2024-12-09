@@ -1,7 +1,9 @@
 use serde::{Deserialize, Serialize};
 use serde_json::{self, json};
-use tauri::command;
+use tauri::{command, AppHandle};
 use tauri_plugin_store::{Store, StoreExt};
+
+use super::github_client::get_client;
 
 #[derive(Serialize, Deserialize)]
 pub struct DeviceCodeResponse {
@@ -124,4 +126,38 @@ pub fn get_stored_token(app: &tauri::AppHandle) -> Result<String, String> {
         .as_str()
         .ok_or("Token is not a string".to_string())
         .map(String::from)
+}
+
+pub async fn save_github_username(app: &AppHandle) -> Result<(), String> {
+    let octocrab = get_client();
+
+    let current_user = octocrab
+        .current()
+        .user()
+        .await
+        .map_err(|e| format!("Failed to get user: {}", e))?;
+
+    let path = app
+        .path()
+        .app_config_dir()
+        .ok_or("Failed to get config dir")?
+        .join("github_user.json");
+
+    let user_data = serde_json::json!({
+        "username": current_user.login,
+    });
+
+    std::fs::write(
+        path,
+        serde_json::to_string_pretty(&user_data).map_err(|e| e.to_string())?,
+    )
+    .map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+pub async fn get_stored_username(app: &AppHandle) -> Result<String, String> {
+    let path = app.path_resolver().app_data_dir()?.join("github_user.json");
+
+    let data = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
 }
