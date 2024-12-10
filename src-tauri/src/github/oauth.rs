@@ -1,6 +1,7 @@
+use octocrab::models::App;
 use serde::{Deserialize, Serialize};
 use serde_json::{self, json};
-use tauri::{command, AppHandle};
+use tauri::{command, AppHandle, State};
 use tauri_plugin_store::{Store, StoreExt};
 
 use super::github_client::get_client;
@@ -12,6 +13,17 @@ pub struct DeviceCodeResponse {
     pub verification_uri: String,
     pub expires_in: u32,
     pub interval: u32,
+}
+#[derive(Serialize, Deserialize, Clone)]
+pub struct AuthState {
+    pub token: String,
+    pub user: Option<UserDetails>,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+struct UserDetails {
+    pub login: String,
+    pub avatar_url: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -30,11 +42,6 @@ enum TokenOrError {
         error_description: Option<String>,
         interval: Option<u32>,
     },
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Clone)]
-pub struct AuthState {
-    token: String,
 }
 
 #[command]
@@ -89,15 +96,23 @@ pub async fn poll_for_token(app: tauri::AppHandle, device_code: String) -> Resul
 
     match response {
         TokenOrError::Token(token) => {
+            let user_details = fetch_user_details(&token.access_token).await?;
+
             let store = app
                 .store("auth.json")
                 .map_err(|e| format!("Failed to access store: {}", e))?;
 
-            store.set("github_token", json!(token.access_token.clone()));
+            store.set(
+                "auth_state",
+                json!(AuthState {
+                    token: token.access_token.clone(),
+                    user: Some(user_details),
+                }),
+            );
 
             store
                 .save()
-                .map_err(|e| format!("Failed to save token: {}", e))?;
+                .map_err(|e| format!("Failed to save auth state: {}", e))?;
 
             Ok(token.access_token)
         }
@@ -115,49 +130,39 @@ pub async fn poll_for_token(app: tauri::AppHandle, device_code: String) -> Resul
     }
 }
 
-pub fn get_stored_token(app: &tauri::AppHandle) -> Result<String, String> {
-    let store = app
-        .store("auth.json")
-        .map_err(|e| format!("Failed to access store: {}", e))?;
+async fn fetch_user_details(token: &str) -> Result<UserDetails, String> {
+    let octocrab = octocrab::OctocrabBuilder::new()
+        .personal_token(token.to_string())
+        .build()
+        .map_err(|e| e.to_string())?;
 
-    store
-        .get("github_token")
-        .ok_or("No token found".to_string())?
-        .as_str()
-        .ok_or("Token is not a string".to_string())
-        .map(String::from)
+    let user = octocrab.current().user().await.map_err(|e| e.to_string())?;
+
+    Ok(UserDetails {
+        login: user.login,
+        avatar_url: user.avatar_url.to_string(),
+    })
 }
 
-pub async fn save_github_username(app: &AppHandle) -> Result<(), String> {
-    let octocrab = get_client();
-
-    let current_user = octocrab
-        .current()
-        .user()
-        .await
-        .map_err(|e| format!("Failed to get user: {}", e))?;
-
-    let path = app
-        .path()
-        .app_config_dir()
-        .ok_or("Failed to get config dir")?
-        .join("github_user.json");
-
-    let user_data = serde_json::json!({
-        "username": current_user.login,
-    });
-
-    std::fs::write(
-        path,
-        serde_json::to_string_pretty(&user_data).map_err(|e| e.to_string())?,
-    )
-    .map_err(|e| e.to_string())?;
-
-    Ok(())
+pub fn get_token(app: &AppHandle) -> Result<String, String> {
+    let auth = get_stored_auth(app)?.ok_or("not authenticated")?;
+    Ok(auth.token)
 }
 
-pub async fn get_stored_username(app: &AppHandle) -> Result<String, String> {
-    let path = app.path_resolver().app_data_dir()?.join("github_user.json");
+pub fn get_stored_auth(app: &AppHandle) -> Result<Option<AuthState>, String> {
+    let store = app.store("auth.json").map_err(|e| e.to_string())?;
 
-    let data = std::fs::read_to_string(path).map_err(|e| e.to_string())?;
+    let auth_state: Option<AuthState> = match store.get("auth_state") {
+        Some(value) => Some(serde_json::from_value(value.clone()).map_err(|e| e.to_string())?),
+        None => None,
+    };
+
+    Ok(auth_state)
+}
+
+#[command]
+pub fn get_username(app: State<AppHandle>) -> Result<String, String> {
+    let auth = get_stored_auth(&app)?.ok_or("not authenticated")?;
+    let username = auth.user.ok_or("no user details")?.login;
+    Ok(username)
 }

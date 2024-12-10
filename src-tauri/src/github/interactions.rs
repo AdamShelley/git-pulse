@@ -1,5 +1,5 @@
 use super::issues::{CommentData, IssueData, IssuesCache};
-use super::oauth::get_stored_token;
+use super::oauth::get_token;
 use chrono::Utc;
 use std::env;
 use tauri::{command, AppHandle, State};
@@ -13,7 +13,7 @@ pub async fn add_issue_comment(
     body: String,
     cache: State<'_, IssuesCache>,
 ) -> Result<IssueData, String> {
-    let token = get_stored_token(&app)?;
+    let token = get_token(&app)?;
 
     let octocrab = octocrab::OctocrabBuilder::new()
         .personal_token(token)
@@ -37,7 +37,7 @@ pub async fn fetch_single_issue(
     issue_number: i64,
     cache: State<'_, IssuesCache>,
 ) -> Result<IssueData, String> {
-    let token = get_stored_token(&app)?;
+    let token = get_token(&app)?;
 
     let octocrab = octocrab::OctocrabBuilder::new()
         .personal_token(token)

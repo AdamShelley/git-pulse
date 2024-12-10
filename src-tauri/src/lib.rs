@@ -18,6 +18,7 @@ use github::issues::get_pinned_repos;
 use github::issues::save_pinned_repos;
 use github::issues::IssuesCache;
 
+use github::oauth::get_stored_auth;
 use obsidian::save::save_to_obsidian;
 
 use settings::settings::load_settings;
@@ -30,6 +31,7 @@ use recents::recents::save_recents;
 
 use github::interactions::add_issue_comment;
 
+use github::oauth::get_username;
 use github::oauth::initiate_device_login;
 use github::oauth::poll_for_token;
 
@@ -48,10 +50,8 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::new().build())
         .manage(IssuesCache::default())
-        .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
-        .plugin(tauri_plugin_log::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             save_to_obsidian,
             check_cache_status,
@@ -73,17 +73,32 @@ pub fn run() {
             get_pinned_repos,
             save_pinned_repos,
             create_new_issue,
-            generate_and_save_changelog
+            generate_and_save_changelog,
+            get_username
         ])
         .setup(|app| {
             // Initialize the store
-            let app_handle = app.handle();
-            tauri::async_runtime::block_on(async move {
-                init_github_client(&app_handle).expect("Failed to initialize GitHub client");
-            });
-
             let _store = app.store("auth.json")?;
             let _repo_store = app.store("repos.json")?;
+
+            let app_handle = app.handle();
+
+            tauri::async_runtime::block_on(async move {
+                match get_stored_auth(&app_handle) {
+                    Ok(Some(_)) => {
+                        init_github_client(&app_handle)?;
+                    }
+                    Ok(None) => {
+                        // Do nothing
+                    }
+                    Err(e) => {
+                        println!("Error: {}", e);
+                    }
+                }
+                Ok::<(), String>(())
+            })
+            .expect("Runtime error during setup");
+
             Ok(())
         })
         .run(tauri::generate_context!())

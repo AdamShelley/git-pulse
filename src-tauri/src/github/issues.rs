@@ -109,6 +109,8 @@ pub async fn fetch_issues(
     cache: State<'_, IssuesCache>,
     force_refresh: bool,
 ) -> Result<Vec<IssueData>, String> {
+    println!("Fetching issues for {}/{}", owner, repo);
+
     let cache_key = format!("{}/{}", owner, repo);
 
     // Check cache
@@ -121,7 +123,7 @@ pub async fn fetch_issues(
         }
     }
 
-    let octocrab = get_client();
+    let octocrab = get_client()?;
 
     let mut all_issues = Vec::new();
     let page = octocrab
@@ -232,7 +234,7 @@ pub async fn create_new_issue(
     title: &str,
     body: &str,
 ) -> Result<octocrab::models::issues::Issue, String> {
-    let octocrab = get_client();
+    let octocrab = get_client()?;
     let issue = octocrab
         .issues(owner, repo)
         .create(title)

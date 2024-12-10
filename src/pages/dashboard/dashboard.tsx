@@ -50,6 +50,7 @@ const IssuesDashboard = () => {
   });
 
   const { issues, lastUpdated } = data || {};
+  console.log(issues);
 
   if (error) return <div>Error loading issues</div>;
 

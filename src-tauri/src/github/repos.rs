@@ -19,7 +19,7 @@ pub struct RepoData {
 
 #[command]
 pub async fn fetch_repos(app: AppHandle) -> Result<Vec<RepoData>, String> {
-    let octocrab = get_client();
+    let octocrab = get_client()?;
 
     let mut all_repos = Vec::new();
     let mut page = octocrab

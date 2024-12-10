@@ -88,7 +88,11 @@ export function AppSidebar() {
       const response = await invoke<DevideCode>("initiate_device_login");
       setUserCode(response.user_code);
 
-      await navigator.clipboard.writeText(response.user_code);
+      try {
+        await navigator.clipboard.writeText(response.user_code);
+      } catch (clipboardError) {
+        console.log("Couldn't auto-copy code, that's okay");
+      }
 
       await open(response.verification_uri);
 
@@ -226,7 +230,19 @@ export function AppSidebar() {
           <>
             <div>
               <p>
-                Enter this code on GitHub: <strong>{userCode}</strong>
+                <Button
+                  onClick={async () => {
+                    try {
+                      if (userCode) {
+                        await navigator.clipboard.writeText(userCode);
+                      }
+                    } catch (e) {
+                      console.error("Failed to copy");
+                    }
+                  }}
+                >
+                  Copy{" "}
+                </Button>
               </p>
               <p>Follow the instructions in your browser to complete login</p>
             </div>
