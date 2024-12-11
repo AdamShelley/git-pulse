@@ -17,10 +17,12 @@ export const useFetchIssues = ({
   const query = useQuery({
     queryKey: ["issues", owner, repos, forceRefresh],
     queryFn: async () => {
+      // console.log("QueryFn executing for repos:", repos);
       const allIssues = await Promise.all(
         repos.map((repo) => fetchIssuesForRepo(owner, repo, forceRefresh))
       );
 
+      // console.log("All issues fetched:", allIssues);
       return {
         issues: allIssues
           .flat()
@@ -44,19 +46,20 @@ const fetchIssuesForRepo = async (
   repo: string,
   forceRefresh: boolean
 ): Promise<ExtendedIssueData[]> => {
+  // console.log(`Fetching issues for ${owner}/${repo}, force: ${forceRefresh}`);
+
   const cacheStatus = await invoke<{ cached: boolean; last_updated: string }>(
     "check_cache_status",
-    {
-      owner,
-      repo,
-    }
+    { owner, repo }
   );
+  // console.log("Cache status:", cacheStatus);
 
   const issues = await invoke<IssueData[]>("fetch_issues", {
     owner,
     repo,
     forceRefresh: !cacheStatus || forceRefresh,
   });
+  // console.log(`Received ${issues.length} issues for ${repo}`);
 
   return issues.map((issue) => ({
     ...issue,

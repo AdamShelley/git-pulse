@@ -29,7 +29,7 @@ const RepoTabs = ({ issues, repoNames, loading }: RepoTabsProps) => {
 
   if (loading) {
     return (
-      <Loader2 className="size-8 text-primary-muted mx-auto mt-8 animate animate-spin" />
+      <Loader2 className="size-8 text-muted-foreground mx-auto mt-8 animate animate-spin" />
     );
   }
 

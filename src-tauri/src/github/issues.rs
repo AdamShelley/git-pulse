@@ -84,16 +84,19 @@ pub async fn check_cache_status<'a>(
     repo: String,
     cache: State<'a, IssuesCache>,
 ) -> Result<CacheStatus, String> {
+    println!("Checking cache status for {}/{}", owner, repo);
     let cache_key = format!("{}/{}", owner, repo);
     let cache_guard = cache.cache.lock().map_err(|e| e.to_string())?;
 
     if let Some((_, last_updated)) = cache_guard.get(&cache_key) {
+        println!("Cache found with last update: {}", last_updated);
         Ok(CacheStatus {
             cached: true,
             last_updated: Some(last_updated.to_string()),
             etag: None,
         })
     } else {
+        println!("No cache found for {}/{}", owner, repo);
         Ok(CacheStatus {
             cached: false,
             last_updated: None,
@@ -118,45 +121,71 @@ pub async fn fetch_issues(
         let cache_guard = cache.cache.lock().map_err(|e| e.to_string())?;
         if let Some((cached_issues, last_updated)) = cache_guard.get(&cache_key) {
             if Utc::now() - *last_updated < Duration::minutes(5) {
+                println!("Returning cached issues");
                 return Ok(cached_issues.clone());
             }
         }
     }
 
+    println!("Getting GitHub client...");
     let octocrab = get_client()?;
 
+    println!("Fetching issues from GitHub API...");
     let mut all_issues = Vec::new();
-    let page = octocrab
+    let page = match octocrab
         .issues(&owner, &repo)
         .list()
         .state(params::State::All)
         .per_page(100)
         .send()
         .await
-        .map_err(|e| e.to_string())?;
+    {
+        Ok(page) => {
+            println!("Got {} issues", page.items.len());
+            page
+        }
+        Err(e) => {
+            println!("Error fetching issues: {}", e);
+            return Err(e.to_string());
+        }
+    };
 
+    println!("Processing issues...");
     let mut processed_issues: Vec<IssueData> =
         page.items.into_iter().map(IssueData::from).collect();
 
+    println!("Fetching comments for {} issues...", processed_issues.len());
     for issue in &mut processed_issues {
-        let comments = octocrab
+        println!("Fetching comments for issue #{}", issue.number);
+        match octocrab
             .issues(&owner, &repo)
             .list_comments(issue.number as u64)
             .send()
             .await
-            .map_err(|e| e.to_string())?;
-
-        issue.comments = comments
-            .items
-            .into_iter()
-            .map(|comment| CommentData {
-                id: comment.id.0.try_into().unwrap_or_default(),
-                body: comment.body.unwrap_or_default(),
-                created_at: comment.created_at.to_rfc3339(),
-                updated_at: comment.updated_at.map(|t| t.to_rfc3339()),
-                author: comment.user.login,
-            })
-            .collect();
+        {
+            Ok(comments) => {
+                println!(
+                    "Got {} comments for issue #{}",
+                    comments.items.len(),
+                    issue.number
+                );
+                issue.comments = comments
+                    .items
+                    .into_iter()
+                    .map(|comment| CommentData {
+                        id: comment.id.0.try_into().unwrap_or_default(),
+                        body: comment.body.unwrap_or_default(),
+                        created_at: comment.created_at.to_rfc3339(),
+                        updated_at: comment.updated_at.map(|t| t.to_rfc3339()),
+                        author: comment.user.login,
+                    })
+                    .collect();
+            }
+            Err(e) => {
+                println!("Error fetching comments for issue #{}: {}", issue.number, e);
+                return Err(e.to_string());
+            }
+        }
     }
 
     all_issues.extend(processed_issues.clone());
@@ -165,8 +194,7 @@ pub async fn fetch_issues(
     let mut cache_guard = cache.cache.lock().map_err(|e| e.to_string())?;
     cache_guard.insert(cache_key, (processed_issues, Utc::now()));
 
-    println!("{:#?}", all_issues);
-
+    println!("Returning {} issues", all_issues.len());
     Ok(all_issues)
 }
 

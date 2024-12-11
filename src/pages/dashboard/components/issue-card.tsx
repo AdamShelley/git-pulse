@@ -21,7 +21,7 @@ export const IssueCard = ({ issue }: { issue: ExtendedIssueData }) => {
     <Card
       key={issue.title}
       onClick={() => navigateToIssueDetail(issue)}
-      className="bg-zinc-900/50 border-zinc-700/50 hover:border-zinc-700 transition cursor-pointer flex items-center justify-between"
+      className="bg-zinc-900/40 border-zinc-500/30 hover:border-zinc-700 transition cursor-pointer flex items-center justify-between"
     >
       <CardHeader>
         <CardTitle className="flex text-sm font-medium items-center justify-start gap-3  ">
