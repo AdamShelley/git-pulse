@@ -1,13 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ExtendedIssueData } from "@/types/types";
-import { IssueCard } from "./issue-card";
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-} from "@/components/ui/context-menu";
-import { Loader2, Pin, PinIcon } from "lucide-react";
+import { Loader2, PinIcon } from "lucide-react";
 import { usePinnedReposStore } from "@/stores/pinned-repo-store";
 import IssueTable from "./issue-table";
 

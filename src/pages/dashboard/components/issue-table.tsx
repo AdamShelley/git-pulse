@@ -5,6 +5,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 import { usePinnedReposStore } from "@/stores/pinned-repo-store";
 import useRecentlyViewedStore from "@/stores/recently-viewed-store";
 import { ExtendedIssueData } from "@/types/types";
@@ -39,7 +40,7 @@ const IssueTable = ({ issues, loading, handleUnpin, handlePin }: Props) => {
             <Table>
               <TableBody>
                 <TableRow
-                  className="cursor-pointer flex items-center justify-between"
+                  className="cursor-pointer flex items-center justify-between active:scale-[0.99] transition-transform duration-100"
                   onClick={() => navigateToIssueDetail(issue)}
                 >
                   <TableCell>
@@ -58,7 +59,24 @@ const IssueTable = ({ issues, loading, handleUnpin, handlePin }: Props) => {
                       </p>
                     </div>
                   </TableCell>
-                  <TableCell>{issue.labels}</TableCell>
+                  <TableCell>
+                    {issue.labels?.map((tag, index) => (
+                      <span
+                        key={index}
+                        className={cn(
+                          "px-3 py-1 text-xs rounded-lg capitalize",
+                          {
+                            "bg-green-500 text-zinc-100":
+                              tag === "good first issue",
+                            "bg-red-700/50 text-zinc-100": tag === "bug",
+                            "bg-secondary text-zinc-100": tag === "enhancement",
+                          }
+                        )}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </TableCell>
                 </TableRow>
               </TableBody>
             </Table>

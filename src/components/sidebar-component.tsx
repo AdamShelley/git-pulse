@@ -40,24 +40,7 @@ import { Button } from "./ui/button";
 import { open } from "@tauri-apps/plugin-shell";
 import { useAuthStore } from "@/stores/auth-store";
 import useSettingsStore from "@/stores/settings-store";
-
-const items = [
-  {
-    title: "Home",
-    url: "/",
-    icon: Home,
-  },
-  {
-    title: "Search",
-    url: "/search",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "/settings",
-    icon: Settings,
-  },
-];
+import CommandPalette from "@/pages/search/command";
 
 interface DevideCode {
   device_code: string;
@@ -73,6 +56,25 @@ export function AppSidebar() {
   const { isLoggedIn, checkAuth, isLoading, setLoggedIn } = useAuthStore();
   const { recently_viewed_option, updateSettings } = useSettingsStore();
   const [userCode, setUserCode] = useState<string | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  const items = [
+    {
+      title: "Home",
+      url: "/",
+      icon: Home,
+    },
+    {
+      title: "Search",
+      onClick: () => setSearchOpen(true),
+      icon: Search,
+    },
+    {
+      title: "Settings",
+      url: "/settings",
+      icon: Settings,
+    },
+  ];
 
   const showRepos = () => {
     console.log("Navigating");
@@ -134,122 +136,135 @@ export function AppSidebar() {
   }, [clearViewed]);
 
   return (
-    <Sidebar className="border-zinc-700 ">
-      <SidebarContent className="p-2">
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-zinc-300 text-sm flex items-center justify-between">
-            {/* TODO: Replace with real icon */}
-            <div className="flex ">
-              <LucideGitFork className="w-5 h-5 mr-2" />
-              Git Pulse
-            </div>
-          </SidebarGroupLabel>
-          <SidebarGroupAction title="Add Repos">
-            <Plus onClick={showRepos} />{" "}
-            <span className="sr-only">Add Repos</span>
-          </SidebarGroupAction>
+    <>
+      <Sidebar className="border-zinc-700 ">
+        <SidebarContent className="p-2">
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-zinc-300 text-sm flex items-center justify-between">
+              {/* TODO: Replace with real icon */}
+              <div className="flex ">
+                <LucideGitFork className="w-5 h-5 mr-2" />
+                Git Pulse
+              </div>
+            </SidebarGroupLabel>
+            <SidebarGroupAction title="Add Repos">
+              <Plus onClick={showRepos} />{" "}
+              <span className="sr-only">Add Repos</span>
+            </SidebarGroupAction>
 
-          <SidebarGroupContent className="">
-            <SidebarMenu className="mt-2">
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link to={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-            <SidebarMenu className="mt-5 text-zinc-400 font-semibold">
-              <SidebarMenuItem>
-                <Collapsible
-                  open={recently_viewed_option}
-                  onOpenChange={updateViewedOption}
-                  className="group/collapsible"
-                >
-                  <ContextMenu>
-                    <ContextMenuTrigger>
-                      <CollapsibleTrigger className="pl-2 flex items-center justify-between w-full select-none text-zinc-400">
-                        Recently Viewed
-                        <ChevronDown
-                          className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"
-                          size="1rem"
-                        />
-                      </CollapsibleTrigger>
-                    </ContextMenuTrigger>
-                    <ContextMenuContent className="dark">
-                      <ContextMenuItem
-                        className="text-xs inset cursor-pointer border-none font-medium text-white font-inter"
-                        onClick={clearViewed}
-                      >
-                        Clear Recently Viewed
-                      </ContextMenuItem>
-                    </ContextMenuContent>
-                  </ContextMenu>
-                  <CollapsibleContent className="mt-2">
-                    {viewedIssues.length > 0 &&
-                      viewedIssues.map((issue) => (
-                        <SidebarMenuItem key={issue.id}>
-                          <SidebarMenuButton
-                            asChild
-                            className="text-foreground/90"
-                          >
-                            <Link
-                              to={`/issues/${issue.id}`}
-                              className="text-xs"
+            <SidebarGroupContent className="">
+              <SidebarMenu className="mt-2">
+                {items.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      {item.url ? (
+                        <Link to={item.url}>
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </Link>
+                      ) : (
+                        <button
+                          onClick={item.onClick}
+                          className="flex items-center gap-2 w-full"
+                        >
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </button>
+                      )}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+              <SidebarMenu className="mt-5 text-zinc-400 font-semibold">
+                <SidebarMenuItem>
+                  <Collapsible
+                    open={recently_viewed_option}
+                    onOpenChange={updateViewedOption}
+                    className="group/collapsible"
+                  >
+                    <ContextMenu>
+                      <ContextMenuTrigger>
+                        <CollapsibleTrigger className="pl-2 flex items-center justify-between w-full select-none text-zinc-400">
+                          Recently Viewed
+                          <ChevronDown
+                            className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"
+                            size="1rem"
+                          />
+                        </CollapsibleTrigger>
+                      </ContextMenuTrigger>
+                      <ContextMenuContent className="dark">
+                        <ContextMenuItem
+                          className="text-xs inset cursor-pointer border-none font-medium text-white font-inter"
+                          onClick={clearViewed}
+                        >
+                          Clear Recently Viewed
+                        </ContextMenuItem>
+                      </ContextMenuContent>
+                    </ContextMenu>
+                    <CollapsibleContent className="mt-2">
+                      {viewedIssues.length > 0 &&
+                        viewedIssues.map((issue) => (
+                          <SidebarMenuItem key={issue.id}>
+                            <SidebarMenuButton
+                              asChild
+                              className="text-foreground/90"
                             >
-                              <span>{issue.name}</span>
-                            </Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      ))}
-                  </CollapsibleContent>
-                </Collapsible>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarRail />
-      <SidebarFooter>
-        {isLoading && (
-          <div className="flex align-center justify start">
-            <Loader2 className="text-zinc-300 mr-1 size-4 animate animate-spin" />
-            <span className="text-xs">Checking Authentication</span>
-          </div>
-        )}
-        {isLoggedIn && !isLoading ? (
-          <div className="flex align-center justify start">
-            <Plug className="text-zinc-300 size-4 mr-1 " />
-            <span className="text-xs">Connected</span>
-          </div>
-        ) : null}
-        {!isLoggedIn && !isLoading ? (
-          <>
-            <div>
-              <p>
-                <Button
-                  onClick={async () => {
-                    try {
-                      if (userCode) {
-                        await navigator.clipboard.writeText(userCode);
-                      }
-                    } catch (e) {
-                      console.error("Failed to copy");
-                    }
-                  }}
-                >
-                  Copy{" "}
-                </Button>
-              </p>
-              <p>Follow the instructions in your browser to complete login</p>
+                              <Link
+                                to={`/issues/${issue.id}`}
+                                className="text-xs"
+                              >
+                                <span>{issue.name}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        ))}
+                    </CollapsibleContent>
+                  </Collapsible>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+        <SidebarRail />
+        <SidebarFooter>
+          {isLoading && (
+            <div className="flex align-center justify start">
+              <Loader2 className="text-zinc-300 mr-1 size-4 animate animate-spin" />
+              <span className="text-xs">Checking Authentication</span>
             </div>
-            <Button onClick={oauthLogin}>Github Login</Button>
-          </>
-        ) : null}
-      </SidebarFooter>
-    </Sidebar>
+          )}
+          {isLoggedIn && !isLoading ? (
+            <div className="flex align-center justify start">
+              <Plug className="text-zinc-300 size-4 mr-1 " />
+              <span className="text-xs">Connected</span>
+            </div>
+          ) : null}
+          {!isLoggedIn && !isLoading ? (
+            <>
+              <div>
+                <p>
+                  <Button
+                    onClick={async () => {
+                      try {
+                        if (userCode) {
+                          await navigator.clipboard.writeText(userCode);
+                        }
+                      } catch (e) {
+                        console.error("Failed to copy");
+                      }
+                    }}
+                  >
+                    Copy{" "}
+                  </Button>
+                </p>
+                <p>Follow the instructions in your browser to complete login</p>
+              </div>
+              <Button onClick={oauthLogin}>Github Login</Button>
+            </>
+          ) : null}
+        </SidebarFooter>
+      </Sidebar>
+      <CommandPalette open={searchOpen} setOpen={setSearchOpen} />
+    </>
   );
 }
