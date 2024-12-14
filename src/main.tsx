@@ -7,6 +7,7 @@ import Root from "./root";
 import Settings from "./pages/settings/settings";
 import SelectRepos from "./pages/dashboard/components/select-repos";
 import CommentPage from "./pages/comments/comment-page";
+import { AnimatePresence } from "framer-motion";
 
 const router = createBrowserRouter([
   {
@@ -42,6 +43,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AnimatePresence mode="wait">
+      <RouterProvider router={router} />
+    </AnimatePresence>
   </React.StrictMode>
 );

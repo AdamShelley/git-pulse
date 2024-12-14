@@ -8,6 +8,7 @@ import AddCommentForm from "./components/add-comment";
 import CommentSection from "./components/comments";
 
 import { useIssue } from "@/hooks/use-issue";
+import { AnimatedPage } from "@/components/animation-wrapper";
 
 const IssuePage = () => {
   const { id } = useParams<{ id: string }>();
@@ -22,43 +23,48 @@ const IssuePage = () => {
   if (!issue) return <div>Issue not found</div>;
 
   return (
-    <div className="p-2 max-w-4xl mx-auto w-full h-full">
-      <div className="space-y-4">
-        <div key={issue.number} className="">
-          <div className="mb-6">
-            <h2 className="text-md font-semibold flex items-center justify-between mb-1">
-              <div className="flex items-center justify-center gap-2">
-                {issue.state === "open" ? (
-                  <AlertCircle className="w-5 h-5 text-red-500" />
-                ) : (
-                  <CheckCircle className="w-5 h-5 text-green-500" />
-                )}
-                <span>{issue.title}</span>
+    <AnimatedPage>
+      <div className="p-2 max-w-4xl mx-auto w-full h-full">
+        <div className="space-y-4">
+          <div key={issue.number} className="">
+            <div className="mb-6">
+              <h2 className="text-md font-semibold flex items-center justify-between mb-1">
+                <div className="flex items-center justify-center gap-2">
+                  {issue.state === "open" ? (
+                    <AlertCircle className="w-5 h-5 text-red-500" />
+                  ) : (
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                  )}
+                  <span>{issue.title}</span>
+                </div>
+                <p className="text-sm font-semibold">{repo}</p>
+              </h2>
+              <div className="text-sm text-gray-500">
+                Opened by {issue.creator} on
+                {new Date(issue.created_at).toLocaleDateString()}
               </div>
-              <p className="text-sm font-semibold">{repo}</p>
-            </h2>
-            <div className="text-sm text-gray-500">
-              Opened by {issue.creator} on
-              {new Date(issue.created_at).toLocaleDateString()}
             </div>
-          </div>
-          <div className="mt-[70px] pb-10 mb-4 prose prose-invert max-w-none prose-pre:bg-zinc-800 prose-pre:border prose-pre:border-zinc-700">
-            <ReactMarkdown remarkPlugins={[remarkGfm]} className="mb-4 text-sm">
-              {issue.body || ""}
-            </ReactMarkdown>
-            <div className="mb-4 mt-10">
-              <SaveToObsidianButton issue={issue} />
+            <div className="mt-[70px] pb-10 mb-4 prose prose-invert max-w-none prose-pre:bg-zinc-800 prose-pre:border prose-pre:border-zinc-700">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                className="mb-4 text-sm"
+              >
+                {issue.body || ""}
+              </ReactMarkdown>
+              <div className="mb-4 mt-10">
+                <SaveToObsidianButton issue={issue} />
+              </div>
+              <CommentSection issue={issue} />
+              <AddCommentForm
+                owner={owner}
+                repo={repo}
+                issueNumber={issueNumber}
+              />
             </div>
-            <CommentSection issue={issue} />
-            <AddCommentForm
-              owner={owner}
-              repo={repo}
-              issueNumber={issueNumber}
-            />
           </div>
         </div>
       </div>
-    </div>
+    </AnimatedPage>
   );
 };
 

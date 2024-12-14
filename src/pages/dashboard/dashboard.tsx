@@ -31,6 +31,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useAddIssue } from "@/hooks/use-add-issue";
+import { AnimatedPage } from "@/components/animation-wrapper";
 
 const formSchema = z.object({
   owner: z.string(),
@@ -87,81 +88,87 @@ const IssuesDashboard = () => {
   }, []);
 
   return (
-    <div className="flex flex-col p-1 mx-auto">
-      <div className="flex-1 min-h-0 overflow-auto">
-        {repoNames.length === 0 ? (
-          <div className="flex flex-col gap-4 items-center justify-center h-64 text-muted-foreground">
-            <FolderGit className="size-12" /> <p>No repositories selected</p>
-            <p className="text-sm">Select repositories to view their issues</p>
-          </div>
-        ) : issues ? (
-          <>
-            <RepoTabs
-              issues={issues as ExtendedIssueData[]}
-              repoNames={repoNames}
-              loading={isPending}
-            />
-            {/* Move to own component */}
-            <div className="flex-shrink-0 mt-1 pt-2 flex flex-col">
-              <Dialog>
-                <DialogTrigger>Add New Issue</DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Add a new Issue</DialogTitle>
-                    <DialogDescription>
-                      <Form {...form}>
-                        <form onSubmit={form.handleSubmit(addNewRepo)}>
-                          <FormField
-                            control={form.control}
-                            name="title"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Title</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="Title" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="body"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Body</FormLabel>
-                                <FormControl>
-                                  <Textarea placeholder="Body" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <Button type="submit">Submit</Button>
-                        </form>
-                      </Form>
-                    </DialogDescription>
-                  </DialogHeader>
-                </DialogContent>
-              </Dialog>
-              {lastUpdated && (
-                <div className="text-sm text-gray-500 flex justify-between mt-3">
-                  <p>Last updated: {new Date(lastUpdated).toLocaleString()}</p>
-                  <RefreshCcw
-                    className="size-4 text-muted-foreground cursor-pointer hover:text-foreground transition"
-                    onClick={handleRefresh}
-                  />
-                </div>
-              )}
+    <AnimatedPage>
+      <div className="flex flex-col p-1 mx-auto">
+        <div className="flex-1 min-h-0 overflow-auto">
+          {repoNames.length === 0 ? (
+            <div className="flex flex-col gap-4 items-center justify-center h-64 text-muted-foreground">
+              <FolderGit className="size-12" /> <p>No repositories selected</p>
+              <p className="text-sm">
+                Select repositories to view their issues
+              </p>
             </div>
-          </>
-        ) : (
-          <div className="flex justify-center items-center h-full">
-            <Loader2 className="size-8 text-muted-foreground animate animate-spin" />
-          </div>
-        )}
+          ) : issues ? (
+            <>
+              <RepoTabs
+                issues={issues as ExtendedIssueData[]}
+                repoNames={repoNames}
+                loading={isPending}
+              />
+              {/* Move to own component */}
+              <div className="flex-shrink-0 mt-1 pt-2 flex flex-col">
+                <Dialog>
+                  <DialogTrigger>Add New Issue</DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add a new Issue</DialogTitle>
+                      <DialogDescription>
+                        <Form {...form}>
+                          <form onSubmit={form.handleSubmit(addNewRepo)}>
+                            <FormField
+                              control={form.control}
+                              name="title"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Title</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Title" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="body"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Body</FormLabel>
+                                  <FormControl>
+                                    <Textarea placeholder="Body" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <Button type="submit">Submit</Button>
+                          </form>
+                        </Form>
+                      </DialogDescription>
+                    </DialogHeader>
+                  </DialogContent>
+                </Dialog>
+                {lastUpdated && (
+                  <div className="text-sm text-gray-500 flex justify-between mt-3">
+                    <p>
+                      Last updated: {new Date(lastUpdated).toLocaleString()}
+                    </p>
+                    <RefreshCcw
+                      className="size-4 text-muted-foreground cursor-pointer hover:text-foreground transition"
+                      onClick={handleRefresh}
+                    />
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="flex justify-center items-center h-full">
+              <Loader2 className="size-8 text-muted-foreground animate animate-spin" />
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </AnimatedPage>
   );
 };
 
