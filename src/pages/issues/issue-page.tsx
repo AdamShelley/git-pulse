@@ -8,7 +8,7 @@ import AddCommentForm from "./components/add-comment";
 import CommentSection from "./components/comments";
 
 import { useIssue } from "@/hooks/use-issue";
-import { AnimatedPage } from "@/components/animation-wrapper";
+import AnimatedContainer from "@/components/animation-wrapper";
 
 const IssuePage = () => {
   const { id } = useParams<{ id: string }>();
@@ -23,7 +23,7 @@ const IssuePage = () => {
   if (!issue) return <div>Issue not found</div>;
 
   return (
-    <AnimatedPage>
+    <AnimatedContainer type="fadeSlide">
       <div className="p-2 max-w-4xl mx-auto w-full h-full">
         <div className="space-y-4">
           <div key={issue.number} className="">
@@ -64,7 +64,7 @@ const IssuePage = () => {
           </div>
         </div>
       </div>
-    </AnimatedPage>
+    </AnimatedContainer>
   );
 };
 

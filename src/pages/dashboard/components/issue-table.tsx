@@ -17,9 +17,16 @@ type Props = {
   loading: boolean;
   handleUnpin?: (issue: ExtendedIssueData) => void;
   handlePin?: (issue: ExtendedIssueData) => void;
+  animate?: boolean;
 };
 
-const IssueTable = ({ issues, loading, handleUnpin, handlePin }: Props) => {
+const IssueTable = ({
+  issues,
+  loading,
+  handleUnpin,
+  handlePin,
+  animate = false,
+}: Props) => {
   const navigate = useNavigate();
   const { pinnedIds } = usePinnedReposStore();
 
@@ -34,7 +41,7 @@ const IssueTable = ({ issues, loading, handleUnpin, handlePin }: Props) => {
 
   return (
     <>
-      {issues.map((issue: ExtendedIssueData) => (
+      {issues.map((issue: ExtendedIssueData, index: number) => (
         <ContextMenu key={issue.id}>
           <ContextMenuTrigger>
             <Table>

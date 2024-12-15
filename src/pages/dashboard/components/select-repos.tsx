@@ -71,15 +71,17 @@ const SelectRepos = () => {
 
   return (
     <div>
-      <Button className="w-full card-foreground" onClick={submitRepos}>
-        Save Selected Repos
-      </Button>
-      <div className="mb-4">
-        <Input
-          placeholder="Search repositories..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+      <div className="flex justify-center gap-4">
+        <div className="mb-4 flex-1">
+          <Input
+            placeholder="Search repositories..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <Button className="card-foreground" onClick={submitRepos}>
+          Save Selected Repos
+        </Button>
       </div>
       <div className="flex gap-2 mb-4">
         <Button variant="outline" size="sm" onClick={selectAll}>

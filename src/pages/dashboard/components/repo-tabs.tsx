@@ -8,9 +8,10 @@ interface RepoTabsProps {
   issues: ExtendedIssueData[];
   repoNames: string[];
   loading: boolean;
+  animate: boolean;
 }
 
-const RepoTabs = ({ issues, repoNames, loading }: RepoTabsProps) => {
+const RepoTabs = ({ issues, repoNames, loading, animate }: RepoTabsProps) => {
   const { pinnedIds, setPinnedIds } = usePinnedReposStore();
 
   const handlePin = async (issue: ExtendedIssueData) => {
@@ -46,7 +47,12 @@ const RepoTabs = ({ issues, repoNames, loading }: RepoTabsProps) => {
       </TabsList>
 
       <TabsContent value="all" className="space-y-2">
-        <IssueTable issues={issues} loading={false} handlePin={handlePin} />
+        <IssueTable
+          issues={issues}
+          loading={loading}
+          animate={animate}
+          handlePin={handlePin}
+        />
       </TabsContent>
 
       <TabsContent value="pinned" className="space-y-2">

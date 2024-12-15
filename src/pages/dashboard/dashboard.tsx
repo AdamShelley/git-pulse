@@ -31,7 +31,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useAddIssue } from "@/hooks/use-add-issue";
-import { AnimatedPage } from "@/components/animation-wrapper";
+import AnimatedContainer from "@/components/animation-wrapper";
 
 const formSchema = z.object({
   owner: z.string(),
@@ -42,6 +42,8 @@ const formSchema = z.object({
 
 const IssuesDashboard = () => {
   const [repoNames, setRepoNames] = useState<string[]>([]);
+  const [initialLoad, setInitialLoad] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const { mutate: refreshIssues, isPending } = useRefreshIssues();
   const addIssue = useAddIssue();
 
@@ -66,6 +68,7 @@ const IssuesDashboard = () => {
   });
 
   const handleRefresh = () => {
+    setIsRefreshing(true);
     refreshIssues({ repos: repoNames });
   };
 
@@ -87,8 +90,18 @@ const IssuesDashboard = () => {
     fetchStoredRepos();
   }, []);
 
+  useEffect(() => {
+    if (!isLoading && data) {
+      const timer = setTimeout(() => {
+        setInitialLoad(false);
+        setIsRefreshing(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, data]);
+
   return (
-    <AnimatedPage>
+    <AnimatedContainer type="fadeSlide">
       <div className="flex flex-col p-1 mx-auto">
         <div className="flex-1 min-h-0 overflow-auto">
           {repoNames.length === 0 ? (
@@ -103,7 +116,8 @@ const IssuesDashboard = () => {
               <RepoTabs
                 issues={issues as ExtendedIssueData[]}
                 repoNames={repoNames}
-                loading={isPending}
+                loading={isPending || isLoading}
+                animate={initialLoad || isRefreshing}
               />
               {/* Move to own component */}
               <div className="flex-shrink-0 mt-1 pt-2 flex flex-col">
@@ -168,7 +182,7 @@ const IssuesDashboard = () => {
           )}
         </div>
       </div>
-    </AnimatedPage>
+    </AnimatedContainer>
   );
 };
 

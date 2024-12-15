@@ -40,7 +40,7 @@ pub async fn generate_and_save_changelog(
     
     // Generate AI summary
     let prompt = format!(
-        "Generate a concise changelog entry for this issue. Focus on the changes made and their impact:\n\nIssue #{}: {}\n{}",
+        "Generate a concise changelog entry for this issue. Focus on the changes made and their impact:\n\nIssue #{}: {}\n{}, try to keep it to max 2 sentences.",
         issue.number, 
         issue.title, 
         issue.body.as_deref().unwrap_or("No description provided")

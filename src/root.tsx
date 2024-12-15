@@ -23,6 +23,7 @@ export default function Root() {
     <>
       <QueryClientProvider client={queryClient}>
         <Toaster />
+
         <SidebarProvider className="dark font-inter">
           <AppSidebar />
           <main className="dark text-primary bg-zinc-950 w-screen h-screen overflow-x-hidden font-inter p-5 ">

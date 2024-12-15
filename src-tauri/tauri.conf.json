@@ -14,9 +14,13 @@
       {
         "title": "",
         "width": 1100,
-        "height": 800
+        "height": 800,
+        "decorations": false,
+        "transparent": true,
+        "titleBarStyle": "Overlay"
       }
     ],
+    "macOSPrivateApi": true,
     "security": {
       "csp": null
     }
