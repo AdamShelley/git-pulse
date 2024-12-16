@@ -41,6 +41,7 @@ import { open } from "@tauri-apps/plugin-shell";
 import { useAuthStore } from "@/stores/auth-store";
 import useSettingsStore from "@/stores/settings-store";
 import CommandPalette from "@/pages/search/command";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface DevideCode {
   device_code: string;
@@ -202,22 +203,34 @@ export function AppSidebar() {
                       </ContextMenuContent>
                     </ContextMenu>
                     <CollapsibleContent className="mt-2">
-                      {viewedIssues.length > 0 &&
-                        viewedIssues.map((issue) => (
-                          <SidebarMenuItem key={issue.id}>
-                            <SidebarMenuButton
-                              asChild
-                              className="text-foreground/90"
+                      <AnimatePresence mode="popLayout">
+                        {viewedIssues.length > 0 &&
+                          viewedIssues.map((issue, index) => (
+                            <motion.div
+                              key={issue.id}
+                              initial={{ opacity: 0, y: -2 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{
+                                duration: 0.15,
+                                delay: index * 0.05,
+                              }}
                             >
-                              <Link
-                                to={`/issues/${issue.id}`}
-                                className="text-xs"
-                              >
-                                <span>{issue.name}</span>
-                              </Link>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        ))}
+                              <SidebarMenuItem>
+                                <SidebarMenuButton
+                                  asChild
+                                  className="text-foreground/90"
+                                >
+                                  <Link
+                                    to={`/issues/${issue.id}`}
+                                    className="text-xs"
+                                  >
+                                    <span>{issue.name}</span>
+                                  </Link>
+                                </SidebarMenuButton>
+                              </SidebarMenuItem>
+                            </motion.div>
+                          ))}
+                      </AnimatePresence>
                     </CollapsibleContent>
                   </Collapsible>
                 </SidebarMenuItem>

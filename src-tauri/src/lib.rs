@@ -9,7 +9,6 @@ mod window_manager;
 use dotenvy::dotenv;
 use std::env;
 use tauri::Manager;
-use window_vibrancy::{apply_blur, apply_vibrancy, NSVisualEffectMaterial};
 
 use github::github_client::init_github_client;
 use github::issues::check_cache_status;
@@ -42,6 +41,7 @@ use github::repos::fetch_repos;
 use github::repos::get_repos_from_store;
 
 use ais::changelog::generate_and_save_changelog;
+use ais::file_suggestions::get_relevant_files;
 
 use tauri_plugin_store::StoreExt;
 
@@ -76,7 +76,8 @@ pub fn run() {
             save_pinned_repos,
             create_new_issue,
             generate_and_save_changelog,
-            get_username
+            get_username,
+            get_relevant_files
         ])
         .setup(|app| {
             // Initialize the store
@@ -84,20 +85,20 @@ pub fn run() {
             let _repo_store = app.store("repos.json")?;
 
             let app_handle = app.handle();
-            let main_window = app_handle.get_webview_window("main").unwrap();
+            // let main_window = app_handle.get_webview_window("main").unwrap();
 
             // Window management
             window_manager::setup_window_management(app)?;
 
-            // Vibrancy
-            #[cfg(target_os = "macos")]
-            apply_vibrancy(
-                &main_window,
-                NSVisualEffectMaterial::HudWindow,
-                None,
-                Some(8_f64),
-            )
-            .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
+            // // Vibrancy
+            // #[cfg(target_os = "macos")]
+            // apply_vibrancy(
+            //     &main_window,
+            //     NSVisualEffectMaterial::HudWindow,
+            //     None,
+            //     Some(8_f64),
+            // )
+            // .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
 
             tauri::async_runtime::block_on(async move {
                 match get_stored_auth(&app_handle) {

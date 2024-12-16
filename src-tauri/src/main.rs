@@ -3,6 +3,7 @@
 
 mod ais;
 mod error;
+mod github;
 
 pub use self::error::{Error, Result};
 

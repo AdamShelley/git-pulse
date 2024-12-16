@@ -4,3 +4,5 @@ pub mod issues;
 pub mod oauth;
 pub mod repos;
 pub mod types;
+
+pub use oauth::get_token;

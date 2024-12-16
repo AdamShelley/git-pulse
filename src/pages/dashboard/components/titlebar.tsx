@@ -1,13 +1,13 @@
+// components/TitleBar.tsx
 import { Window } from "@tauri-apps/api/window";
-import { Minus, Square, X } from "lucide-react";
+import { useState } from "react";
+import { Minus, X, Maximize2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const TitleBar = () => {
-  const handleMinimize = async () => {
-    const window = Window.getCurrent();
-    await window.minimize();
-  };
+  const [isHovered, setIsHovered] = useState(false);
 
-  const handleMaximize = async () => {
+  const handleDoubleClick = async () => {
     const window = Window.getCurrent();
     const isMaximized = await window.isMaximized();
     if (isMaximized) {
@@ -17,38 +17,68 @@ const TitleBar = () => {
     }
   };
 
-  const handleClose = async () => {
-    const window = Window.getCurrent();
-    await window.close();
-  };
-
   return (
-    <div
-      data-tauri-drag-region
-      className="h-8 flex justify-between items-center fixed top-0 left-0 right-0 bg-background/50 backdrop-blur-sm"
-    >
-      <div className="px-4">Git Pulse</div>
-      <div className="flex">
-        <button
-          onClick={handleMinimize}
-          className="inline-flex items-center justify-center h-8 w-8 hover:bg-accent"
-        >
-          <Minus className="h-4 w-4" />
-        </button>
-        <button
-          onClick={handleMaximize}
-          className="inline-flex items-center justify-center h-8 w-8 hover:bg-accent"
-        >
-          <Square className="h-4 w-4" />
-        </button>
-        <button
-          onClick={handleClose}
-          className="inline-flex items-center justify-center h-8 w-8 hover:bg-red-500/20"
-        >
-          <X className="h-4 w-4" />
-        </button>
+    <>
+      {/* Separate drag region that spans the full width */}
+      <div
+        data-tauri-drag-region
+        className="fixed top-0 left-0 right-0 h-8 z-40"
+      />
+
+      {/* Title bar content */}
+      <div
+        onDoubleClick={handleDoubleClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className="h-8 fixed top-0 left-0 right-0 z-50 bg-transparent select-none flex items-center"
+      >
+        {/* Traffic light buttons */}
+        <div className="pl-2 flex items-center gap-1.5">
+          <button
+            onClick={async () => await Window.getCurrent().close()}
+            className={cn(
+              "w-3 h-3 rounded-full transition-colors relative group flex items-center justify-center",
+              isHovered ? "bg-red-500 hover:bg-red-600" : "bg-zinc-600"
+            )}
+          >
+            {isHovered && (
+              <X className="w-2 h-2 text-red-900 opacity-0 group-hover:opacity-100 absolute" />
+            )}
+          </button>
+          <button
+            onClick={async () => await Window.getCurrent().minimize()}
+            className={cn(
+              "w-3 h-3 rounded-full transition-colors relative group flex items-center justify-center",
+              isHovered ? "bg-yellow-500 hover:bg-yellow-600" : "bg-zinc-600"
+            )}
+          >
+            {isHovered && (
+              <Minus className="w-2 h-2 text-yellow-900 opacity-0 group-hover:opacity-100 absolute" />
+            )}
+          </button>
+          <button
+            onClick={async () => {
+              const window = Window.getCurrent();
+              const isMaximized = await window.isMaximized();
+              isMaximized ? window.unmaximize() : window.maximize();
+            }}
+            className={cn(
+              "w-3 h-3 rounded-full transition-colors relative group flex items-center justify-center",
+              isHovered ? "bg-green-500 hover:bg-green-600" : "bg-zinc-600"
+            )}
+          >
+            {isHovered && (
+              <Maximize2 className="w-2 h-2 text-green-900 opacity-0 group-hover:opacity-100 absolute" />
+            )}
+          </button>
+        </div>
+
+        {/* Window title */}
+        <div className="flex-1 text-center text-zinc-400 text-sm font-medium">
+          Git Pulse
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

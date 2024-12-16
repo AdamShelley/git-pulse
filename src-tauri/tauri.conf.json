@@ -14,10 +14,7 @@
       {
         "title": "",
         "width": 1100,
-        "height": 800,
-        "decorations": false,
-        "transparent": true,
-        "titleBarStyle": "Overlay"
+        "height": 800
       }
     ],
     "macOSPrivateApi": true,
