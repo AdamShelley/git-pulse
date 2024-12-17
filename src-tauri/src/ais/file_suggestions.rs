@@ -1,10 +1,10 @@
-use crate::github::get_token;
+use crate::github::{get_token, get_username};
 use anthropic::client::Client;
 use anthropic::config::AnthropicConfig;
 use anthropic::types::{ContentBlock, Message, MessagesRequestBuilder, Role};
 use octocrab::Octocrab;
 use serde::{Deserialize, Serialize};
-use tauri::{command, AppHandle};
+use tauri::{command, AppHandle, Manager};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FileRecommendation {
@@ -15,7 +15,6 @@ pub struct FileRecommendation {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct IssueInput {
-    repo_owner: String,
     repo_name: String,
     issue_number: u64,
 }
@@ -28,6 +27,8 @@ pub async fn get_relevant_files(
     // Get GitHub token
     let github_token = get_token(&app)?;
 
+    let username = get_username(app.state())?;
+
     // Initialize GitHub client
     let octocrab = Octocrab::builder()
         .personal_token(github_token)
@@ -36,14 +37,14 @@ pub async fn get_relevant_files(
 
     // Get issue details from GitHub
     let issue = octocrab
-        .issues(input.repo_owner.clone(), input.repo_name.clone())
+        .issues(username.clone(), input.repo_name.clone())
         .get(input.issue_number as u64)
         .await
         .map_err(|e| e.to_string())?;
 
     // Get repository file tree
     let tree = octocrab
-        .repos(input.repo_owner, input.repo_name)
+        .repos(username, input.repo_name)
         .get_content()
         .send()
         .await

@@ -6,3 +6,4 @@ pub mod repos;
 pub mod types;
 
 pub use oauth::get_token;
+pub use oauth::get_username;

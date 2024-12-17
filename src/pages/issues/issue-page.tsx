@@ -9,6 +9,7 @@ import CommentSection from "./components/comments";
 
 import { useIssue } from "@/hooks/use-issue";
 import AnimatedContainer from "@/components/animation-wrapper";
+import FileAnalyzer from "./components/file-analyzer";
 
 const IssuePage = () => {
   const { id } = useParams<{ id: string }>();
@@ -53,6 +54,7 @@ const IssuePage = () => {
               </ReactMarkdown>
               <div className="mb-4 mt-10">
                 <SaveToObsidianButton issue={issue} />
+                <FileAnalyzer repoName={repo} issueNumber={issueNumber} />
               </div>
               <CommentSection issue={issue} />
               <AddCommentForm
