@@ -161,7 +161,7 @@ pub fn get_stored_auth(app: &AppHandle) -> Result<Option<AuthState>, String> {
 }
 
 #[command]
-pub fn get_username(app: State<AppHandle>) -> Result<String, String> {
+pub fn get_username(app: AppHandle) -> Result<String, String> {
     let auth = get_stored_auth(&app)?.ok_or("not authenticated")?;
     let username = auth.user.ok_or("no user details")?.login;
     Ok(username)

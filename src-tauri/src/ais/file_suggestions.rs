@@ -27,7 +27,7 @@ pub async fn get_relevant_files(
     // Get GitHub token
     let github_token = get_token(&app)?;
 
-    let username = get_username(app.state())?;
+    let username = get_username(app.clone())?;
 
     // Initialize GitHub client
     let octocrab = Octocrab::builder()
