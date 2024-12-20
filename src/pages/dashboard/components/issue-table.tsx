@@ -20,13 +20,7 @@ type Props = {
   animate?: boolean;
 };
 
-const IssueTable = ({
-  issues,
-  loading,
-  handleUnpin,
-  handlePin,
-  animate = false,
-}: Props) => {
+const IssueTable = ({ issues, loading, handleUnpin, handlePin }: Props) => {
   const navigate = useNavigate();
   const { pinnedIds } = usePinnedReposStore();
 
@@ -41,7 +35,7 @@ const IssueTable = ({
 
   return (
     <>
-      {issues.map((issue: ExtendedIssueData, index: number) => (
+      {issues.map((issue: ExtendedIssueData) => (
         <ContextMenu key={issue.id}>
           <ContextMenuTrigger>
             <Table>
@@ -64,6 +58,15 @@ const IssueTable = ({
                         Opened by {issue.creator} on{" "}
                         {new Date(issue.created_at).toLocaleDateString()}
                       </p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center justify-center ">
+                      {issue.comments.length > 0 && (
+                        <span className="text-sm text-gray-500">
+                          {issue.comments.length} comments
+                        </span>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell>
