@@ -1,3 +1,6 @@
+use std::collections::HashMap;
+use std::sync::Mutex;
+
 use crate::github::{get_token, get_username};
 use anthropic::client::Client;
 use anthropic::config::AnthropicConfig;
@@ -6,11 +9,22 @@ use octocrab::Octocrab;
 use serde::{Deserialize, Serialize};
 use tauri::{command, AppHandle, Manager};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct FileRecommendation {
     path: String,
     reason: String,
     confidence: f32,
+}
+#[derive(Debug, Hash, Eq, PartialEq)]
+struct CacheKey {
+    repo_name: String,
+    issue_number: u64,
+}
+
+// Define the state structure
+#[derive(Default)]
+pub struct RecommendationsState {
+    cache: Mutex<HashMap<CacheKey, Vec<FileRecommendation>>>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -21,6 +35,41 @@ pub struct IssueInput {
 
 #[command]
 pub async fn get_relevant_files(
+    app: AppHandle,
+    input: IssueInput,
+) -> Result<Vec<FileRecommendation>, String> {
+    // Check cache first
+    let cache_key = CacheKey {
+        repo_name: input.repo_name.clone(),
+        issue_number: input.issue_number,
+    };
+
+    // Try to get recommendations from cache
+    if let Some(cached) = app
+        .state::<RecommendationsState>()
+        .cache
+        .lock()
+        .map_err(|e| e.to_string())?
+        .get(&cache_key)
+    {
+        return Ok(cached.clone());
+    }
+
+    // If not in cache, proceed with API calls
+    let recommendations = fetch_recommendations(app.clone(), input).await?;
+
+    // Store in cache
+    app.state::<RecommendationsState>()
+        .cache
+        .lock()
+        .map_err(|e| e.to_string())?
+        .insert(cache_key, recommendations.clone());
+
+    Ok(recommendations)
+}
+
+#[command]
+pub async fn fetch_recommendations(
     app: AppHandle,
     input: IssueInput,
 ) -> Result<Vec<FileRecommendation>, String> {

@@ -9,7 +9,13 @@ import { cn } from "@/lib/utils";
 import { usePinnedReposStore } from "@/stores/pinned-repo-store";
 import useRecentlyViewedStore from "@/stores/recently-viewed-store";
 import { ExtendedIssueData } from "@/types/types";
-import { AlertCircle, CheckCircle, Loader2, Pin } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle,
+  Loader2,
+  MessageCircle,
+  Pin,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 type Props = {
@@ -58,18 +64,26 @@ const IssueTable = ({ issues, loading, handleUnpin, handlePin }: Props) => {
                         Opened by {issue.creator} on{" "}
                         {new Date(issue.created_at).toLocaleDateString()}
                       </p>
+                      <div className="flex items-center justify-center ">
+                        {issue.comments.length > 0 && (
+                          <span className="text-sm text-gray-500">
+                            {issue.comments.length} comments
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="flex gap-2">
                     <div className="flex items-center justify-center ">
                       {issue.comments.length > 0 && (
-                        <span className="text-sm text-gray-500">
-                          {issue.comments.length} comments
-                        </span>
+                        <>
+                          <span className="mr-2 text-muted-foreground">
+                            {issue.comments.length}
+                          </span>
+                          <MessageCircle className="size-3 text-muted-foreground" />
+                        </>
                       )}
                     </div>
-                  </TableCell>
-                  <TableCell>
                     {issue.labels?.map((tag, index) => (
                       <span
                         key={index}
