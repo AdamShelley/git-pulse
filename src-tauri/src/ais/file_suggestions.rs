@@ -1,7 +1,5 @@
-use std::collections::HashMap;
-use std::sync::Mutex;
-
 use crate::github::{get_token, get_username};
+
 use anthropic::client::Client;
 use anthropic::config::AnthropicConfig;
 use anthropic::types::{ContentBlock, Message, MessagesRequestBuilder, Role};
@@ -15,16 +13,11 @@ pub struct FileRecommendation {
     reason: String,
     confidence: f32,
 }
+
 #[derive(Debug, Hash, Eq, PartialEq)]
-struct CacheKey {
+pub struct CacheKey {
     repo_name: String,
     issue_number: u64,
-}
-
-// Define the state structure
-#[derive(Default)]
-pub struct RecommendationsState {
-    cache: Mutex<HashMap<CacheKey, Vec<FileRecommendation>>>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -44,26 +37,30 @@ pub async fn get_relevant_files(
         issue_number: input.issue_number,
     };
 
+    let app_state = app.state::<AppState>();
+
     // Try to get recommendations from cache
-    if let Some(cached) = app
-        .state::<RecommendationsState>()
-        .cache
-        .lock()
-        .map_err(|e| e.to_string())?
-        .get(&cache_key)
     {
-        return Ok(cached.clone());
+        let cache = app_state
+            .recommendations
+            .lock()
+            .map_err(|e| e.to_string())?;
+        if let Some(cached) = cache.get(&cache_key) {
+            return Ok(cached.clone());
+        }
     }
 
     // If not in cache, proceed with API calls
     let recommendations = fetch_recommendations(app.clone(), input).await?;
 
     // Store in cache
-    app.state::<RecommendationsState>()
-        .cache
-        .lock()
-        .map_err(|e| e.to_string())?
-        .insert(cache_key, recommendations.clone());
+    {
+        let mut cache = app_state
+            .recommendations
+            .lock()
+            .map_err(|e| e.to_string())?;
+        cache.insert(cache_key, recommendations.clone());
+    }
 
     Ok(recommendations)
 }

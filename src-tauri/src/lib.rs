@@ -1,4 +1,4 @@
-mod ais;
+pub mod ais;
 mod check_auth;
 mod github;
 mod obsidian;
@@ -6,9 +6,14 @@ mod recents;
 mod settings;
 mod window_manager;
 
+use crate::ais::file_suggestions::{CacheKey, FileRecommendation};
 use dotenvy::dotenv;
+use std::collections::HashMap;
 use std::env;
+use std::sync::Arc;
+use std::sync::Mutex;
 use tauri::Manager;
+use tauri_plugin_store::Store;
 
 use github::github_client::init_github_client;
 use github::issues::check_cache_status;
@@ -44,6 +49,14 @@ use ais::changelog::generate_and_save_changelog;
 use ais::file_suggestions::get_relevant_files;
 
 use tauri_plugin_store::StoreExt;
+
+use tauri::Wry;
+
+pub struct AppState {
+    auth: Arc<Store<Wry>>,
+    repos: Arc<Store<Wry>>,
+    recommendations: Mutex<HashMap<CacheKey, Vec<FileRecommendation>>>,
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -81,8 +94,14 @@ pub fn run() {
         ])
         .setup(|app| {
             // Initialize the store
-            let _store = app.store("auth.json")?;
-            let _repo_store = app.store("repos.json")?;
+            let auth_store = app.store("auth.json")?;
+            let repo_store = app.store("repos.json")?;
+
+            app.manage(AppState {
+                auth: auth_store,
+                repos: repo_store,
+                recommendations: Mutex::new(HashMap::new()),
+            });
 
             let app_handle = app.handle();
             // let main_window = app_handle.get_webview_window("main").unwrap();
