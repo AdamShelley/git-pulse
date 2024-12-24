@@ -6,7 +6,6 @@ mod recents;
 mod settings;
 mod window_manager;
 
-use crate::ais::file_suggestions::{CacheKey, FileRecommendation};
 use dotenvy::dotenv;
 use std::collections::HashMap;
 use std::env;
@@ -52,12 +51,6 @@ use tauri_plugin_store::StoreExt;
 
 use tauri::Wry;
 
-pub struct AppState {
-    auth: Arc<Store<Wry>>,
-    repos: Arc<Store<Wry>>,
-    recommendations: Mutex<HashMap<CacheKey, Vec<FileRecommendation>>>,
-}
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     dotenv().expect("Failed to load .env file");
@@ -94,30 +87,13 @@ pub fn run() {
         ])
         .setup(|app| {
             // Initialize the store
-            let auth_store = app.store("auth.json")?;
-            let repo_store = app.store("repos.json")?;
-
-            app.manage(AppState {
-                auth: auth_store,
-                repos: repo_store,
-                recommendations: Mutex::new(HashMap::new()),
-            });
+            let _auth_store = app.store("auth.json")?;
+            let _repo_store = app.store("repos.json")?;
 
             let app_handle = app.handle();
-            // let main_window = app_handle.get_webview_window("main").unwrap();
 
             // Window management
             window_manager::setup_window_management(app)?;
-
-            // // Vibrancy
-            // #[cfg(target_os = "macos")]
-            // apply_vibrancy(
-            //     &main_window,
-            //     NSVisualEffectMaterial::HudWindow,
-            //     None,
-            //     Some(8_f64),
-            // )
-            // .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
 
             tauri::async_runtime::block_on(async move {
                 match get_stored_auth(&app_handle) {

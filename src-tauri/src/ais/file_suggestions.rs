@@ -39,31 +39,31 @@ pub async fn get_relevant_files(
     input: IssueInput,
 ) -> Result<Vec<FileRecommendation>, String> {
     // Check cache first
-    let cache_key = CacheKey {
-        repo_name: input.repo_name.clone(),
-        issue_number: input.issue_number,
-    };
+    // let cache_key = CacheKey {
+    //     repo_name: input.repo_name.clone(),
+    //     issue_number: input.issue_number,
+    // };
 
-    // Try to get recommendations from cache
-    if let Some(cached) = app
-        .state::<RecommendationsState>()
-        .cache
-        .lock()
-        .map_err(|e| e.to_string())?
-        .get(&cache_key)
-    {
-        return Ok(cached.clone());
-    }
+    // // Try to get recommendations from cache
+    // if let Some(cached) = app
+    //     .state::<RecommendationsState>()
+    //     .cache
+    //     .lock()
+    //     .map_err(|e| e.to_string())?
+    //     .get(&cache_key)
+    // {
+    //     return Ok(cached.clone());
+    // }
 
     // If not in cache, proceed with API calls
     let recommendations = fetch_recommendations(app.clone(), input).await?;
 
     // Store in cache
-    app.state::<RecommendationsState>()
-        .cache
-        .lock()
-        .map_err(|e| e.to_string())?
-        .insert(cache_key, recommendations.clone());
+    // app.state::<RecommendationsState>()
+    //     .cache
+    //     .lock()
+    //     .map_err(|e| e.to_string())?
+    //     .insert(cache_key, recommendations.clone());
 
     Ok(recommendations)
 }
