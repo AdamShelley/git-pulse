@@ -9,14 +9,17 @@ import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import AnimatedContainer from "@/components/animation-wrapper";
 import { AddNewRepoButton } from "./components/add-new-repo";
+import { useAuthStore } from "@/stores/auth-store";
 
 const IssuesDashboard = () => {
   const [repoNames, setRepoNames] = useState<string[]>([]);
   const [initialLoad, setInitialLoad] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { isPending } = useRefreshIssues();
+  const { username } = useAuthStore();
 
   const { data, isLoading, error } = useFetchIssues({
+    owner: username,
     repos: repoNames,
     forceRefresh: false,
   });

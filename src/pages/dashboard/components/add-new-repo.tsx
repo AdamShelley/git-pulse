@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAddIssue } from "@/hooks/use-add-issue";
 import { useRefreshIssues } from "@/hooks/use-create-fetch-issues";
+import { useAuthStore } from "@/stores/auth-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RefreshCcw } from "lucide-react";
 import { useState } from "react";
@@ -44,11 +45,12 @@ export const AddNewRepoButton = ({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const addIssue = useAddIssue();
   const { mutate: refreshIssues, isPending } = useRefreshIssues();
+  const { username } = useAuthStore();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      owner: "AdamShelley",
+      owner: username,
       repo: "test-repo",
       title: "",
       body: "",

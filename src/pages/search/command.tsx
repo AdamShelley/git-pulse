@@ -22,6 +22,7 @@ import { ExtendedIssueData } from "@/types/types";
 import { useNavigate } from "react-router-dom";
 import useRecentlyViewedStore from "@/stores/recently-viewed-store";
 import { usePinnedReposStore } from "@/stores/pinned-repo-store";
+import { useAuthStore } from "@/stores/auth-store";
 
 interface CommandPaletteProps {
   open: boolean;
@@ -34,8 +35,10 @@ const CommandPalette = ({ open, setOpen }: CommandPaletteProps) => {
   const navigate = useNavigate();
   const { addItem } = useRecentlyViewedStore();
   const { pinnedIds, setPinnedIds } = usePinnedReposStore();
+  const { username } = useAuthStore();
 
   const { data } = useFetchIssues({
+    owner: username,
     repos,
   });
   const issues = data?.issues ?? [];

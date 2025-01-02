@@ -7,13 +7,6 @@ mod settings;
 mod window_manager;
 
 use dotenvy::dotenv;
-use std::collections::HashMap;
-use std::env;
-use std::sync::Arc;
-use std::sync::Mutex;
-use tauri::Manager;
-use tauri_plugin_store::Store;
-
 use github::github_client::init_github_client;
 use github::issues::check_cache_status;
 use github::issues::create_new_issue;
@@ -22,6 +15,7 @@ use github::issues::get_cached_issue;
 use github::issues::get_pinned_repos;
 use github::issues::save_pinned_repos;
 use github::issues::IssuesCache;
+use std::env;
 
 use github::oauth::get_stored_auth;
 use obsidian::save::save_to_obsidian;
@@ -48,8 +42,6 @@ use ais::changelog::generate_and_save_changelog;
 use ais::file_suggestions::get_relevant_files;
 
 use tauri_plugin_store::StoreExt;
-
-use tauri::Wry;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {

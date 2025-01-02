@@ -6,18 +6,21 @@ const CACHE_CHECK_INTERVAL = 30000;
 const CACHE_EXPIRY_TIME = 5 * 60 * 1000;
 
 export const useFetchIssues = ({
+  owner,
   repos,
   forceRefresh = false,
 }: {
+  owner: string;
   repos: string[];
   forceRefresh?: boolean;
 }) => {
-  const owner = "AdamShelley";
+  // const owner = "AdamShelley";
 
   const query = useQuery({
     queryKey: ["issues", owner, repos, forceRefresh],
     queryFn: async () => {
       // console.log("QueryFn executing for repos:", repos);
+
       const allIssues = await Promise.all(
         repos.map((repo) => fetchIssuesForRepo(owner, repo, forceRefresh))
       );
