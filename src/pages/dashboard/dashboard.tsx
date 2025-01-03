@@ -4,7 +4,7 @@ import {
   useFetchIssues,
   useRefreshIssues,
 } from "@/hooks/use-create-fetch-issues";
-import { FolderGit, Loader2 } from "lucide-react";
+import { FolderGit, Loader2, RefreshCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import AnimatedContainer from "@/components/animation-wrapper";
@@ -15,7 +15,7 @@ const IssuesDashboard = () => {
   const [repoNames, setRepoNames] = useState<string[]>([]);
   const [initialLoad, setInitialLoad] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const { isPending } = useRefreshIssues();
+  const { mutate: refreshIssues, isPending } = useRefreshIssues();
   const { username } = useAuthStore();
 
   const { data, isLoading, error } = useFetchIssues({
@@ -27,6 +27,11 @@ const IssuesDashboard = () => {
   const { issues, lastUpdated } = data || {};
 
   if (error) return <div>Error loading issues</div>;
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    refreshIssues({ repos: repoNames });
+  };
 
   useEffect(() => {
     const fetchStoredRepos = async () => {
@@ -52,7 +57,7 @@ const IssuesDashboard = () => {
 
   return (
     <AnimatedContainer type="fadeSlide">
-      <div className="flex flex-col p-1 mx-auto">
+      <div className="flex flex-col p-1 mx-auto min-h-screen">
         <div className="flex-1 min-h-0 overflow-auto">
           {repoNames.length === 0 ? (
             <div className="flex flex-col gap-4 items-center justify-center h-64 text-muted-foreground">
@@ -69,10 +74,15 @@ const IssuesDashboard = () => {
                 loading={isPending || isLoading}
                 animate={initialLoad || isRefreshing}
               />
-              <AddNewRepoButton
-                lastUpdated={lastUpdated ?? ""}
-                repoNames={repoNames}
-              />
+              {lastUpdated && (
+                <div className="text-sm text-gray-500 flex justify-between mt-3 mt">
+                  <p>Last updated: {new Date(lastUpdated).toLocaleString()}</p>
+                  <RefreshCcw
+                    className="size-4 text-muted-foreground cursor-pointer hover:text-foreground transition"
+                    onClick={handleRefresh}
+                  />
+                </div>
+              )}
             </>
           ) : (
             <div className="flex justify-center items-center h-full">

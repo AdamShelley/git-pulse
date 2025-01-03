@@ -21,14 +21,11 @@ import { useAddIssue } from "@/hooks/use-add-issue";
 import { useRefreshIssues } from "@/hooks/use-create-fetch-issues";
 import { useAuthStore } from "@/stores/auth-store";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RefreshCcw } from "lucide-react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 interface AddNewRepoProps {
-  lastUpdated: string;
-  repoNames: string[];
+  repoName: any;
 }
 
 const formSchema = z.object({
@@ -38,20 +35,18 @@ const formSchema = z.object({
   body: z.string(),
 });
 
-export const AddNewRepoButton = ({
-  lastUpdated,
-  repoNames,
-}: AddNewRepoProps) => {
-  const [isRefreshing, setIsRefreshing] = useState(false);
+export const AddNewRepoButton = ({ repoName }: AddNewRepoProps) => {
   const addIssue = useAddIssue();
   const { mutate: refreshIssues, isPending } = useRefreshIssues();
   const { username } = useAuthStore();
+
+  console.log(repoName);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       owner: username,
-      repo: "test-repo",
+      repo: repoName,
       title: "",
       body: "",
     },
@@ -60,12 +55,7 @@ export const AddNewRepoButton = ({
   const addNewRepo = async (values: z.infer<typeof formSchema>) => {
     await addIssue.mutateAsync(values);
 
-    handleRefresh();
-  };
-
-  const handleRefresh = () => {
-    setIsRefreshing(true);
-    refreshIssues({ repos: repoNames });
+    // handleRefresh();
   };
 
   return (
@@ -112,6 +102,9 @@ export const AddNewRepoButton = ({
                       </FormItem>
                     )}
                   />
+                  <div className="py-2">
+                    <strong>Repository:</strong> {repoName}
+                  </div>
                   <Button type="submit">Submit</Button>
                 </form>
               </Form>
@@ -119,15 +112,6 @@ export const AddNewRepoButton = ({
           </DialogHeader>
         </DialogContent>
       </Dialog>
-      {lastUpdated && (
-        <div className="text-sm text-gray-500 flex justify-between mt-3">
-          <p>Last updated: {new Date(lastUpdated).toLocaleString()}</p>
-          <RefreshCcw
-            className="size-4 text-muted-foreground cursor-pointer hover:text-foreground transition"
-            onClick={handleRefresh}
-          />
-        </div>
-      )}
     </div>
   );
 };

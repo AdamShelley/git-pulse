@@ -4,10 +4,8 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
+
 import { usePinnedReposStore } from "@/stores/pinned-repo-store";
-import useRecentlyViewedStore from "@/stores/recently-viewed-store";
 import { ExtendedIssueData } from "@/types/types";
 import {
   AlertCircle,
@@ -16,7 +14,8 @@ import {
   MessageCircle,
   Pin,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { DataTable } from "./issue-table/data-table";
+import { columns } from "./issue-table/columns";
 
 type Props = {
   issues: any;
@@ -27,21 +26,11 @@ type Props = {
 };
 
 const IssueTable = ({ issues, loading, handleUnpin, handlePin }: Props) => {
-  const navigate = useNavigate();
   const { pinnedIds } = usePinnedReposStore();
-
-  const navigateToIssueDetail = (issue: any) => {
-    useRecentlyViewedStore.getState().addItem({
-      id: issue.id,
-      name: issue.title,
-    });
-
-    navigate(`/issues/${issue.id}`, { state: { issue } });
-  };
 
   return (
     <>
-      {issues.map((issue: ExtendedIssueData) => (
+      {/* {issues.map((issue: ExtendedIssueData) => (
         <ContextMenu key={issue.id}>
           <ContextMenuTrigger>
             <Table>
@@ -127,7 +116,8 @@ const IssueTable = ({ issues, loading, handleUnpin, handlePin }: Props) => {
             <ContextMenuItem>Hide</ContextMenuItem>
           </ContextMenuContent>
         </ContextMenu>
-      ))}
+      ))} */}
+      <DataTable columns={columns} data={issues} />
       {loading && <Loader2 className="animate animate-spin w-5 h-5" />}
     </>
   );

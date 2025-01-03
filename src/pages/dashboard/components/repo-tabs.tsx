@@ -3,6 +3,7 @@ import { ExtendedIssueData } from "@/types/types";
 import { Loader2, PinIcon } from "lucide-react";
 import { usePinnedReposStore } from "@/stores/pinned-repo-store";
 import IssueTable from "./issue-table";
+import { AddNewRepoButton } from "./add-new-repo";
 
 interface RepoTabsProps {
   issues: ExtendedIssueData[];
@@ -75,6 +76,7 @@ const RepoTabs = ({ issues, repoNames, loading, animate }: RepoTabsProps) => {
               handlePin={handlePin}
               handleUnpin={handleUnpin}
             />
+            <AddNewRepoButton repoName={repoName} />
           </TabsContent>
         );
       })}
