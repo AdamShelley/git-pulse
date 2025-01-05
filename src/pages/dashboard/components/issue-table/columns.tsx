@@ -1,9 +1,8 @@
+import { IssueData } from "@/types/types";
 import { ColumnDef } from "@tanstack/react-table";
-import { AlertCircle, CheckCircle } from "lucide-react";
+import { AlertCircle, CheckCircle, MessageCircleCode } from "lucide-react";
 
-export type Payment = {};
-
-export const columns: ColumnDef<any>[] = [
+export const columns: ColumnDef<IssueData>[] = [
   {
     accessorKey: "state",
     cell: ({ row }) => {
@@ -28,11 +27,14 @@ export const columns: ColumnDef<any>[] = [
       const createdAt = row.original.created_at;
 
       return (
-        <div className="flex flex-col text-sm font-medium items-start justify-start">
-          <p>{title}</p>
-          <div className="flex items-center justify-start gap-3">
-            <p className="text-gray-500">{username}</p>
-            <p className="text-gray-500">{createdAt}</p>
+        <div>
+          <div className="flex text-sm font-medium items-center justify-start gap-3">
+            <span className="line-clamp-1">{title}</span>
+          </div>
+          <div className="mt-1 text-sm text-gray-500 flex align-center">
+            <p>
+              Opened by {username} on {new Date(createdAt).toLocaleDateString()}
+            </p>
           </div>
         </div>
       );
@@ -41,6 +43,22 @@ export const columns: ColumnDef<any>[] = [
   {
     accessorKey: "comments.length",
     header: "",
+    cell: ({ row }) => {
+      const comments = row.original.comments.length;
+
+      if (comments === 0) {
+        return null;
+      }
+
+      return (
+        <div className="flex text-gray-400 line-clamp-1">
+          <p className="flex items-center gap-1">
+            <MessageCircleCode className="text-gray-400 size-3" />
+            {comments}
+          </p>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "labels",
