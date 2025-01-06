@@ -21,6 +21,7 @@ import { useAddIssue } from "@/hooks/use-add-issue";
 import { useRefreshIssues } from "@/hooks/use-create-fetch-issues";
 import { useAuthStore } from "@/stores/auth-store";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -61,7 +62,10 @@ export const AddNewRepoButton = ({ repoName }: AddNewRepoProps) => {
   return (
     <div className="flex-shrink-0 mt-1 pt-2 flex flex-col">
       <Dialog>
-        <DialogTrigger>Add New Issue</DialogTrigger>
+        <DialogTrigger className="text-sm flex align-center justify-center">
+          <Plus className="size-4 self-center mr-2" />
+          <span>Add New Issue</span>
+        </DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add a new Issue</DialogTitle>
@@ -72,7 +76,7 @@ export const AddNewRepoButton = ({ repoName }: AddNewRepoProps) => {
                     control={form.control}
                     name="title"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="mt-4">
                         <FormLabel>Title</FormLabel>
                         <FormControl>
                           <Input
@@ -89,8 +93,8 @@ export const AddNewRepoButton = ({ repoName }: AddNewRepoProps) => {
                     control={form.control}
                     name="body"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Body</FormLabel>
+                      <FormItem className="mt-4">
+                        <FormLabel>Description</FormLabel>
                         <FormControl>
                           <Textarea
                             placeholder="Body"
@@ -102,7 +106,7 @@ export const AddNewRepoButton = ({ repoName }: AddNewRepoProps) => {
                       </FormItem>
                     )}
                   />
-                  <div className="py-2">
+                  <div className="py-8">
                     <strong>Repository:</strong> {repoName}
                   </div>
                   <Button type="submit">Submit</Button>
