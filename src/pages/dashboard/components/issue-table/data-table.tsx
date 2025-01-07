@@ -12,9 +12,20 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { usePinnedReposStore } from "@/stores/pinned-repo-store";
 
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import { Pin } from "lucide-react";
+import { ExtendedIssueData } from "@/types/types";
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  handlePin?: (issue: any) => void;
+  handleUnpin?: (issue: any) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -24,7 +35,9 @@ export function DataTable<TData, TValue>({
   console.log(data);
 
   const navigate = useNavigate();
-  const { pinnedIds } = usePinnedReposStore();
+  const { pinnedIds, setPinnedIds } = usePinnedReposStore();
+
+  console.log(pinnedIds);
 
   const table = useReactTable({
     data,
@@ -43,6 +56,16 @@ export function DataTable<TData, TValue>({
     navigate(`/issues/${issue.id}`, { state: { issue } });
   };
 
+  const handlePin = async (e: any, issue: ExtendedIssueData) => {
+    e.stopPropagation();
+    await setPinnedIds((prev) => [...prev, String(issue.id)]);
+  };
+
+  const handleUnpin = async (e: any, issue: ExtendedIssueData) => {
+    e.stopPropagation();
+    await setPinnedIds((prev) => prev.filter((id) => id !== issue.id));
+  };
+
   return (
     <div>
       <div className="rounded-md cursor-pointer">
@@ -50,20 +73,47 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  onClick={() => navigateToIssueDetail(row.original)}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                <ContextMenu key={row.id}>
+                  <TableRow
+                    data-state={row.getIsSelected() && "selected"}
+                    onClick={() => navigateToIssueDetail(row.original)}
+                    className="cursor-pointer active:scale-[0.99] transition-transform duration-100"
+                  >
+                    <ContextMenuTrigger className="w-full">
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </ContextMenuTrigger>
+                    <ContextMenuContent>
+                      {!pinnedIds.includes(String(row.original.id)) &&
+                        handlePin && (
+                          <ContextMenuItem
+                            className="text-primary"
+                            onClick={(e) => handlePin(e, row.original)}
+                          >
+                            <Pin className="size-3 mr-2 text-primary-muted" />
+                            Pin
+                          </ContextMenuItem>
+                        )}
+                      {pinnedIds.includes(String(row.original.id)) &&
+                        handleUnpin && (
+                          <ContextMenuItem
+                            className="text-primary"
+                            onClick={(e) => handleUnpin(e, row.original)}
+                          >
+                            <Pin className="size-3 mr-2 text-primary-muted" />
+                            Unpin
+                          </ContextMenuItem>
+                        )}
+                      <ContextMenuItem>Hide</ContextMenuItem>
+                    </ContextMenuContent>
+                  </TableRow>
+                </ContextMenu>
               ))
             ) : (
               <TableRow>
@@ -98,72 +148,4 @@ export function DataTable<TData, TValue>({
       </div>
     </div>
   );
-}
-
-{
-  /* {issues.map((issue: ExtendedIssueData) => (
-        <ContextMenu key={issue.id}>
-          <ContextMenuTrigger>
-            <Table>
-              <TableBody>
-                <TableRow
-                  className="cursor-pointer flex items-center justify-between active:scale-[0.99] transition-transform duration-100"
-                  onClick={() => navigateToIssueDetail(issue)}
-                >
-                  
-                  <TableCell className="flex gap-2">
-                    <div className="flex items-center justify-center ">
-                      {issue.comments.length > 0 && (
-                        <>
-                          <span className="mr-2 text-muted-foreground">
-                            {issue.comments.length}
-                          </span>
-                          <MessageCircle className="size-3 text-muted-foreground" />
-                        </>
-                      )}
-                    </div>
-                    {issue.labels?.map((tag, index) => (
-                      <span
-                        key={index}
-                        className={cn(
-                          "px-3 py-1 text-xs rounded-lg capitalize",
-                          {
-                            "bg-green-500 text-zinc-100":
-                              tag === "good first issue",
-                            "bg-red-700/50 text-zinc-100": tag === "bug",
-                            "bg-secondary text-zinc-100": tag === "enhancement",
-                          }
-                        )}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </ContextMenuTrigger>
-          <ContextMenuContent>
-            {!pinnedIds.includes(String(issue.id)) && handlePin && (
-              <ContextMenuItem
-                className="text-primary"
-                onClick={() => handlePin(issue)}
-              >
-                <Pin className="size-3 mr-2 text-primary-muted" />
-                Pin
-              </ContextMenuItem>
-            )}
-            {pinnedIds.includes(String(issue.id)) && handleUnpin && (
-              <ContextMenuItem
-                className="text-primary"
-                onClick={() => handleUnpin(issue)}
-              >
-                <Pin className="size-3 mr-2 text-primary-muted" />
-                Unpin
-              </ContextMenuItem>
-            )}
-            <ContextMenuItem>Hide</ContextMenuItem>
-          </ContextMenuContent>
-        </ContextMenu>
-      ))} */
 }

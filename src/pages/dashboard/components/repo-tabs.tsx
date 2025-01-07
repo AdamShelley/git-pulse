@@ -13,15 +13,7 @@ interface RepoTabsProps {
 }
 
 const RepoTabs = ({ issues, repoNames, loading, animate }: RepoTabsProps) => {
-  const { pinnedIds, setPinnedIds } = usePinnedReposStore();
-
-  const handlePin = async (issue: ExtendedIssueData) => {
-    await setPinnedIds((prev) => [...prev, String(issue.id)]);
-  };
-
-  const handleUnpin = async (issue: ExtendedIssueData) => {
-    await setPinnedIds((prev) => prev.filter((id) => id !== issue.id));
-  };
+  const { pinnedIds } = usePinnedReposStore();
 
   if (loading) {
     return (
@@ -48,20 +40,11 @@ const RepoTabs = ({ issues, repoNames, loading, animate }: RepoTabsProps) => {
       </TabsList>
 
       <TabsContent value="all" className="space-y-2">
-        <IssueTable
-          issues={issues}
-          loading={loading}
-          animate={animate}
-          handlePin={handlePin}
-        />
+        <IssueTable issues={issues} loading={loading} animate={animate} />
       </TabsContent>
 
       <TabsContent value="pinned" className="space-y-2">
-        <IssueTable
-          issues={pinnedIssues}
-          loading={false}
-          handleUnpin={handleUnpin}
-        />
+        <IssueTable issues={pinnedIssues} loading={false} />
       </TabsContent>
 
       {repoNames.map((repoName) => {
@@ -70,12 +53,7 @@ const RepoTabs = ({ issues, repoNames, loading, animate }: RepoTabsProps) => {
         );
         return (
           <TabsContent value={repoName} key={repoName} className="space-y-2">
-            <IssueTable
-              issues={repoIssues}
-              loading={false}
-              handlePin={handlePin}
-              handleUnpin={handleUnpin}
-            />
+            <IssueTable issues={repoIssues} loading={false} />
             <AddNewRepoButton repoName={repoName} />
           </TabsContent>
         );

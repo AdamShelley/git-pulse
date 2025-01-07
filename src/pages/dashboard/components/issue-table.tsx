@@ -11,7 +11,7 @@ type Props = {
   animate?: boolean;
 };
 
-const IssueTable = ({ issues, loading, handleUnpin, handlePin }: Props) => {
+const IssueTable = ({ issues, loading }: Props) => {
   return (
     <>
       <DataTable columns={columns} data={issues} />
