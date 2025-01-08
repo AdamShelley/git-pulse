@@ -1,8 +1,8 @@
-import { IssueData } from "@/types/types";
+import { ExtendedIssueData } from "@/types/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { AlertCircle, CheckCircle, MessageCircleCode } from "lucide-react";
 
-export const columns: ColumnDef<IssueData>[] = [
+export const columns: ColumnDef<ExtendedIssueData>[] = [
   {
     accessorKey: "state",
     cell: ({ row }) => {

@@ -21,23 +21,14 @@ import {
 import { Pin } from "lucide-react";
 import { ExtendedIssueData } from "@/types/types";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  handlePin?: (issue: any) => void;
-  handleUnpin?: (issue: any) => void;
+interface DataTableProps {
+  columns: ColumnDef<ExtendedIssueData, any>[];
+  data: ExtendedIssueData[];
 }
 
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
-  console.log(data);
-
+export function DataTable({ columns, data }: DataTableProps) {
   const navigate = useNavigate();
   const { pinnedIds, setPinnedIds } = usePinnedReposStore();
-
-  console.log(pinnedIds);
 
   const table = useReactTable({
     data,
