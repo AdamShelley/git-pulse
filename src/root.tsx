@@ -11,13 +11,20 @@ import { usePinnedReposStore } from "./stores/pinned-repo-store";
 const queryClient = new QueryClient();
 
 export default function Root() {
-  const { loadSettings } = useSettingsStore();
+  const { loadSettings, font_size } = useSettingsStore();
   const { initialize } = usePinnedReposStore();
 
   useEffect(() => {
     loadSettings();
     initialize();
+    fontSizeHandler();
   }, []);
+
+  const fontSizeHandler = () => {
+    console.log(font_size);
+    switch (font_size) {
+    }
+  };
 
   return (
     <>

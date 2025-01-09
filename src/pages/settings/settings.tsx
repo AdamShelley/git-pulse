@@ -111,7 +111,7 @@ const Settings = () => {
             <SelectTrigger>
               <SelectValue placeholder="Theme" />
             </SelectTrigger>
-            <SelectContent className="font-inherit">
+            <SelectContent className="font-inter dark text-white">
               <SelectItem value="light">Light</SelectItem>
               <SelectItem value="dark">Dark</SelectItem>
               <SelectItem value="system">System</SelectItem>
@@ -128,7 +128,7 @@ const Settings = () => {
             <SelectTrigger>
               <SelectValue placeholder="Font Size" />
             </SelectTrigger>
-            <SelectContent className="font-inherit ">
+            <SelectContent className="font-inter dark text-white">
               <SelectItem value="small">Small</SelectItem>
               <SelectItem value="medium">Medium</SelectItem>
               <SelectItem value="large">Large</SelectItem>
