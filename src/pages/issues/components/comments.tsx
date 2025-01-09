@@ -1,23 +1,27 @@
-import { CommentData, ExtendedIssueData } from "@/types/types";
-import { MessageSquare } from "lucide-react";
+import { useAuthStore } from "@/stores/auth-store";
+import { ExtendedIssueData } from "@/types/types";
+import { Edit, MessageSquare, X } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import { useNavigate } from "react-router-dom";
 import remarkGfm from "remark-gfm";
+import DrawerHelper from "./drawer-helper";
 
 interface IssueProps {
   issue: ExtendedIssueData;
 }
 
 const CommentSection = ({ issue }: IssueProps) => {
-  const navigate = useNavigate();
+  const { username } = useAuthStore();
 
-  const navigateToCommentDetail = (comment: CommentData) => {
-    console.log(comment, issue);
-    if (!issue?.number) return;
+  const isCurrentUser = () => {
+    return username === issue.creator;
+  };
 
-    navigate(`/issues/${issue.number}/comment/${comment.id}`, {
-      state: { issue, comment: comment.id },
-    });
+  const deleteCommentHandler = (comment: any) => {
+    console.log(comment);
+  };
+
+  const editCommentHandler = (comment: any) => {
+    console.log(comment);
   };
 
   return (
@@ -30,9 +34,40 @@ const CommentSection = ({ issue }: IssueProps) => {
         {issue.comments?.map((comment) => (
           <div
             key={comment.id}
-            className="bg-zinc-900 p-3 rounded-xs border border-transparent transition hover:border-zinc-600 cursor-pointer"
-            onClick={() => navigateToCommentDetail(comment)}
+            className="bg-zinc-900 p-3 rounded-xs border border-transparent transition hover:border-zinc-600 cursor-pointer relative group"
           >
+            {isCurrentUser() && (
+              <div className="flex align-end gap-2 absolute top-2 right-2">
+                <DrawerHelper
+                  trigger={
+                    <Edit className="w-4 h-4 text-gray-400 hover:text-gray-500 transition" />
+                  }
+                  title="Edit Comment"
+                  description="Make changes to your comment"
+                  submitCallback={() => editCommentHandler(comment)}
+                >
+                  {/* EDIT FORM */}
+                  <div className="p-4">
+                    <textarea
+                      className="w-full p-2 bg-zinc-800 text-white border border-zinc-700 rounded"
+                      defaultValue={comment.body}
+                    />
+                  </div>
+                </DrawerHelper>
+                <DrawerHelper
+                  trigger={
+                    <X className="w-4 h-4 text-gray-400 hover:text-gray-500 transition" />
+                  }
+                  title="Delete Comment"
+                  description="This action cannot be undone"
+                  submitCallback={() => deleteCommentHandler(comment)}
+                >
+                  <div className="p-4">
+                    Are you sure you want to delete this comment?
+                  </div>
+                </DrawerHelper>
+              </div>
+            )}
             <div className="font-medium text-sm mb-1">{comment.author}</div>
             <div className="mb-4 prose prose-invert max-w-none prose-pre:bg-zinc-800 prose-pre:border prose-pre:border-zinc-700 prose-p:text-white">
               <ReactMarkdown
