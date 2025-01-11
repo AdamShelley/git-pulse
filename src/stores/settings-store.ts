@@ -29,7 +29,11 @@ const useSettingsStore = create<Settings>((set) => ({
   updateSettings: async (newSettings) => {
     try {
       await invoke("save_settings", { settings: newSettings });
-      set((state) => ({ ...state, ...newSettings }));
+      set((state) => {
+        const newState = { ...state, ...newSettings };
+        console.log("Store updated:", newState);
+        return newState;
+      });
     } catch (error) {
       console.error("Failed to save settings:", error);
     }

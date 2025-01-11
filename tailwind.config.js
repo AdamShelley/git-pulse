@@ -14,6 +14,7 @@ module.exports = {
   		}
   	},
   	extend: {
+
   		colors: {
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
@@ -71,10 +72,12 @@ module.exports = {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
-  		fontSize: {
-  			'2xs': '0.625rem',
-  			'3xs': '0.5rem'
-  		},
+		  fontSize: {
+			'app-sm': ['0.875rem', { lineHeight: '1.25rem' }],
+			'app-base': ['1rem', { lineHeight: '1.5rem' }],
+			'app-lg': ['1.125rem', { lineHeight: '1.75rem' }],
+			'app-xl': ['1.25rem', { lineHeight: '1.75rem' }],
+		  },
   		fontFamily: {
   			sans: ["var(--font-sans)", ...fontFamily.sans],
   			inconsolata: ['Inconsolata', ...fontFamily.mono],

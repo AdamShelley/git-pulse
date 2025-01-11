@@ -28,10 +28,10 @@ export const columns: ColumnDef<ExtendedIssueData>[] = [
 
       return (
         <div>
-          <div className="flex text-sm font-medium items-center justify-start gap-3">
+          <div className="flex font-medium items-center justify-start gap-3">
             <span className="line-clamp-1">{title}</span>
           </div>
-          <div className="mt-1 text-sm text-gray-500 flex align-center">
+          <div className="mt-1 text-gray-500 flex align-center">
             <p>
               Opened by {username} on {new Date(createdAt).toLocaleDateString()}
             </p>

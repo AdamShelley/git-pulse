@@ -29,33 +29,42 @@ interface Settings {
 }
 
 const Settings = () => {
-  const [settings, setSettings] = useState<Settings>({
-    theme: "system",
-    notifications: true,
-    font_size: "",
-    file_directory: "",
-  });
+  // const [settings, setSettings] = useState<Settings>({
+  //   theme: "system",
+  //   notifications: true,
+  //   font_size: "",
+  //   file_directory: "",
+  // });
+
+  const settings = useSettingsStore((state) => state);
+  const updateSettings = useSettingsStore((state) => state.updateSettings);
 
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState("");
   const [vaultPath, setVaultPath] = useState("");
 
-  const loadSettings = async () => {
-    console.log("Loading settings");
-    try {
-      const settings = useSettingsStore.getState();
+  // const loadSettings = async () => {
+  //   console.log("Loading settings");
+  //   try {
+  //     const settings = useSettingsStore.getState();
 
-      console.log(settings);
-      setSettings(settings);
-    } catch (error) {
-      console.error("Failed to load settings:", error);
-    }
-  };
+  //     console.log(settings);
+  //     setSettings(settings);
+  //   } catch (error) {
+  //     console.error("Failed to load settings:", error);
+  //   }
+  // };
 
   const handleChange = async (key: keyof Settings, value: any) => {
-    const newSettings = { ...settings, [key]: value };
-    setSettings(newSettings);
+    // Update the store directly
+    await updateSettings({ [key]: value });
+    console.log("New settings after change:", useSettingsStore.getState());
   };
+
+  // const handleChange = async (key: keyof Settings, value: any) => {
+  //   const newSettings = { ...settings, [key]: value };
+  //   setSettings(newSettings);
+  // };
 
   const saveSettings = async (settingsToSave = settings) => {
     setIsSaving(true);
@@ -85,14 +94,14 @@ const Settings = () => {
       });
       if (selected) {
         setVaultPath(selected);
-        setSettings({ ...settings, file_directory: selected });
+        await updateSettings({ ...settings, file_directory: selected });
       }
     } catch (err) {}
   };
 
-  useEffect(() => {
-    loadSettings();
-  }, []);
+  // useEffect(() => {
+  //   loadSettings();
+  // }, []);
 
   return (
     <Card className="bg-zinc-900/50 border-zinc-700/50 ">
