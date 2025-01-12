@@ -61,7 +61,7 @@ const AddCommentForm = ({ owner, repo, issueNumber }: AddCommentProps) => {
               <FormControl>
                 <Textarea
                   rows={3}
-                  className="bg-zinc-900 p-3 rounded-xs border border-transparent transition hover:border-zinc-600"
+                  className="dark:bg-zinc-900 p-3 rounded-xs border border-slate-500 dark:border-transparent transition hover:border-zinc-600"
                   placeholder="Add a comment"
                   disabled={isCommenting}
                   {...field}

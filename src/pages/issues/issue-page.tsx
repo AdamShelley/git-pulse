@@ -45,7 +45,7 @@ const IssuePage = () => {
                 {new Date(issue.created_at).toLocaleDateString()}
               </div>
             </div>
-            <div className="mt-[70px] pb-10 mb-4 prose prose-invert max-w-none prose-pre:bg-zinc-800 prose-pre:border prose-pre:border-zinc-700">
+            <div className="mt-[70px] pb-10 mb-4 prose prose-invert max-w-none dark:prose-pre:bg-zinc-800 prose-pre:border prose-pre:border-zinc-700">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 className="mb-4 text-sm"

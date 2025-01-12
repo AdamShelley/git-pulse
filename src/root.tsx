@@ -21,6 +21,7 @@ export default function Root() {
 
   // Debug log
   const font_size = useSettingsStore((state) => state.font_size);
+  const theme = useSettingsStore((state) => state.theme);
 
   console.log("Root rendering with font_size:", font_size);
 
@@ -37,16 +38,32 @@ export default function Root() {
     );
   }, [font_size]);
 
+  const getThemeClass = () => {
+    switch (theme) {
+      case "dark":
+        return "dark";
+      case "light":
+        return "light";
+      case "system":
+        // Check system preference
+        return window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+      default:
+        return "light";
+    }
+  };
+
   return (
     <>
       <QueryClientProvider client={queryClient}>
         <Toaster />
 
         <div className={textClass}>
-          <SidebarProvider className={`dark font-inter`}>
+          <SidebarProvider className={`${getThemeClass()} font-inter`}>
             <AppSidebar />
             <main
-              className={`dark text-primary text-base-dynamic bg-zinc-950 w-screen h-screen overflow-x-hidden font-inter p-5`}
+              className={`${getThemeClass()} text-primary text-base-dynamic dark:bg-zinc-950 w-screen h-screen overflow-x-hidden font-inter p-5`}
             >
               <Header />
               <Outlet />

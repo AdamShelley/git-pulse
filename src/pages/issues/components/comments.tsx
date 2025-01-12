@@ -34,7 +34,7 @@ const CommentSection = ({ issue }: IssueProps) => {
         {issue.comments?.map((comment) => (
           <div
             key={comment.id}
-            className="bg-zinc-900 p-3 rounded-xs border border-transparent transition hover:border-zinc-600 cursor-pointer relative group"
+            className="dark:bg-zinc-900 p-3 rounded-xs border border-slate-500 dark:border-transparent transition dark:hover:border-zinc-600 cursor-pointer relative group"
           >
             {isCurrentUser() && (
               <div className="flex align-end gap-2 absolute top-2 right-2">

@@ -31,7 +31,7 @@ export const columns: ColumnDef<ExtendedIssueData>[] = [
           <div className="flex font-medium items-center justify-start gap-3">
             <span className="line-clamp-1">{title}</span>
           </div>
-          <div className="mt-1 text-gray-500 flex align-center">
+          <div className="mt-1 dark:text-gray-500 flex align-center">
             <p>
               Opened by {username} on {new Date(createdAt).toLocaleDateString()}
             </p>
@@ -51,7 +51,7 @@ export const columns: ColumnDef<ExtendedIssueData>[] = [
       }
 
       return (
-        <div className="flex text-gray-400 line-clamp-1">
+        <div className="flex dark:text-gray-400 line-clamp-1">
           <p className="flex items-center gap-1">
             <MessageCircleCode className="text-gray-400 size-3" />
             {comments}

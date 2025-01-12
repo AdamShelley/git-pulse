@@ -104,7 +104,7 @@ const Settings = () => {
   // }, []);
 
   return (
-    <Card className="bg-zinc-900/50 border-zinc-700/50 ">
+    <Card className="dark:bg-zinc-900/50 dark:border-zinc-700/50 border-transparent shadow-none ">
       <CardHeader>
         <CardTitle className="flex text-md font-medium items-center gap-2 m-0">
           Settings

@@ -50,7 +50,7 @@ const FileAnalyzer = ({ repoName, issueNumber }: FileAnalyzerProps) => {
           {loading ? (
             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
           ) : (
-            "Analyze"
+            "Analyse with AI"
           )}
         </Button>
       </div>

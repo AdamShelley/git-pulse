@@ -68,7 +68,7 @@ export function DataTable({ columns, data }: DataTableProps) {
                   <TableRow
                     data-state={row.getIsSelected() && "selected"}
                     onClick={() => navigateToIssueDetail(row.original)}
-                    className="cursor-pointer active:scale-[0.99] transition-transform duration-100"
+                    className="hover:bg-slate-100 dark:hover:bg-zinc-800 cursor-pointer active:scale-[0.99] transition-transform duration-100"
                   >
                     <ContextMenuTrigger className="w-full">
                       {row.getVisibleCells().map((cell) => (
