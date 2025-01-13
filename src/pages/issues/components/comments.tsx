@@ -4,24 +4,36 @@ import { Edit, MessageSquare, X } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import DrawerHelper from "./drawer-helper";
+import { useComments } from "@/hooks/use-comments";
 
 interface IssueProps {
   issue: ExtendedIssueData;
+  repo: string;
 }
 
-const CommentSection = ({ issue }: IssueProps) => {
+const CommentSection = ({ issue, repo }: IssueProps) => {
   const { username } = useAuthStore();
+  const { editComment, deleteComment } = useComments(
+    username,
+    repo,
+    issue.number
+  );
 
   const isCurrentUser = () => {
     return username === issue.creator;
   };
 
-  const deleteCommentHandler = (comment: any) => {
-    console.log(comment);
+  const deleteCommentHandler = async (comment: any) => {
+    console.log("Delete handler called with comment:", comment);
+    try {
+      await deleteComment({ commentId: comment.id });
+    } catch (error) {
+      console.error("Error in delete handler:", error);
+    }
   };
 
   const editCommentHandler = (comment: any) => {
-    console.log(comment);
+    editComment({ commentId: comment.id, body: comment.body });
   };
 
   return (

@@ -1,7 +1,8 @@
+use crate::github::oauth::get_token;
 use std::collections::HashMap;
 use std::sync::Mutex;
 
-use crate::github::{get_token, get_username};
+use crate::github::get_username;
 use anthropic::client::Client;
 use anthropic::config::AnthropicConfig;
 use anthropic::types::{ContentBlock, Message, MessagesRequestBuilder, Role};

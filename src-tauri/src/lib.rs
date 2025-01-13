@@ -29,6 +29,7 @@ use recents::recents::load_recents;
 use recents::recents::save_recents;
 
 use github::interactions::add_issue_comment;
+use github::interactions::delete_issue_comment;
 
 use github::oauth::get_username;
 use github::oauth::initiate_device_login;
@@ -75,7 +76,8 @@ pub fn run() {
             create_new_issue,
             generate_and_save_changelog,
             get_username,
-            get_relevant_files
+            get_relevant_files,
+            delete_issue_comment
         ])
         .setup(|app| {
             // Initialize the store

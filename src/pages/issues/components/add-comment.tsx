@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useComments } from "../api/use-comments";
+import { useComments } from "../../../hooks/use-comments";
 
 interface AddCommentProps {
   owner: string;

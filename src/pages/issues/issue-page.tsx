@@ -56,7 +56,7 @@ const IssuePage = () => {
                 <SaveToObsidianButton issue={issue} />
                 <FileAnalyzer repoName={repo} issueNumber={issueNumber} />
               </div>
-              <CommentSection issue={issue} />
+              <CommentSection issue={issue} repo={repo} />
               <AddCommentForm
                 owner={owner}
                 repo={repo}

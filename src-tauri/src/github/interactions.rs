@@ -1,5 +1,6 @@
 use super::issues::{CommentData, IssueData, IssuesCache};
 use super::oauth::get_token;
+use crate::github::get_username;
 use chrono::Utc;
 use std::env;
 use tauri::{command, AppHandle, State};
@@ -86,4 +87,38 @@ pub async fn fetch_single_issue(
     }
 
     Ok(issue_data)
+}
+
+#[tauri::command]
+pub async fn delete_issue_comment(
+    app: AppHandle,
+    repo: String,
+    comment_number: i64,
+) -> Result<(), String> {
+    println!("Starting delete_issue_comment"); // Add this
+
+    let token = get_token(&app)?;
+    println!("Got token"); // Add this
+
+    println!("Attempting to get GITHUB_OWNER"); // Add this
+    let owner = get_username(app.clone())?;
+
+    println!("Got owner: {}", owner); // Add this
+
+    println!("Deleting comment: {}#{}", repo, comment_number);
+
+    let octocrab = octocrab::OctocrabBuilder::new()
+        .personal_token(token)
+        .build()
+        .map_err(|e| e.to_string())?;
+
+    octocrab
+        .issues(&owner, &repo)
+        .delete_comment(octocrab::models::CommentId(comment_number as u64))
+        .await
+        .map_err(|e| e.to_string())?;
+
+    println!("Comment deleted");
+
+    Ok(())
 }
