@@ -44,13 +44,25 @@ export const useComments = (
 
   const deleteMutation = useMutation({
     mutationFn: async (values: { commentId: number }) => {
-      return invoke("delete_issue_comment", {
-        repo: repo,
+      console.log("Deleting comment with params:", {
+        repo,
         commentNumber: values.commentId,
+        issueNumber,
+      });
+
+      return invoke<ExtendedIssueData>("delete_issue_comment", {
+        repo,
+        commentNumber: values.commentId,
+        issueNumber: issueNumber,
       });
     },
+    onSuccess: (data) => {
+      console.log("Delete successful, updating cache with:", data);
+
+      queryClient.setQueryData(["issue", owner, repo, issueNumber], data);
+    },
     onError: (error) => {
-      console.error("Mutation error handler:", error);
+      console.error("Delete mutation failed:", error);
     },
   });
 

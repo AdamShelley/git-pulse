@@ -94,7 +94,9 @@ pub async fn delete_issue_comment(
     app: AppHandle,
     repo: String,
     comment_number: i64,
-) -> Result<(), String> {
+    issue_number: i64,
+    cache: State<'_, IssuesCache>,
+) -> Result<IssueData, String> {
     println!("Starting delete_issue_comment"); // Add this
 
     let token = get_token(&app)?;
@@ -119,6 +121,5 @@ pub async fn delete_issue_comment(
         .map_err(|e| e.to_string())?;
 
     println!("Comment deleted");
-
-    Ok(())
+    fetch_single_issue(app, owner.clone(), repo, issue_number, cache).await
 }
