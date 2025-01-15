@@ -2,7 +2,6 @@ use super::issues::{CommentData, IssueData, IssuesCache};
 use super::oauth::get_token;
 use crate::github::get_username;
 use chrono::Utc;
-use std::env;
 use tauri::{command, AppHandle, State};
 
 #[command]
@@ -76,7 +75,7 @@ pub async fn fetch_single_issue(
     let cache_key = format!("{}/{}", owner, repo);
     let mut cache_guard = cache.get_cache().lock().map_err(|e| e.to_string())?;
 
-    if let Some((cached_issues, last_updated)) = cache_guard.get_mut(&cache_key) {
+    if let Some((cached_issues, _last_updated)) = cache_guard.get_mut(&cache_key) {
         if let Some(existing_issue) = cached_issues.iter_mut().find(|i| i.number == issue_number) {
             *existing_issue = issue_data.clone();
         } else {
@@ -97,17 +96,8 @@ pub async fn delete_issue_comment(
     issue_number: i64,
     cache: State<'_, IssuesCache>,
 ) -> Result<IssueData, String> {
-    println!("Starting delete_issue_comment"); // Add this
-
     let token = get_token(&app)?;
-    println!("Got token"); // Add this
-
-    println!("Attempting to get GITHUB_OWNER"); // Add this
     let owner = get_username(app.clone())?;
-
-    println!("Got owner: {}", owner); // Add this
-
-    println!("Deleting comment: {}#{}", repo, comment_number);
 
     let octocrab = octocrab::OctocrabBuilder::new()
         .personal_token(token)

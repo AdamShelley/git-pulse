@@ -5,6 +5,7 @@ import { AlertCircle, CheckCircle, MessageCircleCode } from "lucide-react";
 export const columns: ColumnDef<ExtendedIssueData>[] = [
   {
     accessorKey: "state",
+    header: "State",
     cell: ({ row }) => {
       const state = row.getValue("state");
       return (
@@ -20,14 +21,14 @@ export const columns: ColumnDef<ExtendedIssueData>[] = [
   },
   {
     accessorKey: "title",
-    header: "",
+    header: "Title",
     cell: ({ row }) => {
       const title = row.getValue("title") as string;
       const username = row.original.creator;
       const createdAt = row.original.created_at;
 
       return (
-        <div>
+        <div className="flex-grow min-w-0">
           <div className="flex font-medium items-center justify-start gap-3">
             <span className="line-clamp-1">{title}</span>
           </div>
@@ -42,16 +43,14 @@ export const columns: ColumnDef<ExtendedIssueData>[] = [
   },
   {
     accessorKey: "comments.length",
-    header: "",
+    header: "Comments",
     cell: ({ row }) => {
       const comments = row.original.comments.length;
 
-      if (comments === 0) {
-        return null;
-      }
+      if (comments === 0) return null;
 
       return (
-        <div className="flex dark:text-gray-400 line-clamp-1">
+        <div className="w-16 flex justify-end dark:text-gray-400">
           <p className="flex items-center gap-1">
             <MessageCircleCode className="text-gray-400 size-3" />
             {comments}
@@ -62,6 +61,23 @@ export const columns: ColumnDef<ExtendedIssueData>[] = [
   },
   {
     accessorKey: "labels",
-    header: "",
+    header: "labels",
+    cell: ({ row }) => {
+      const labels = row.getValue("labels") as string[];
+      if (!labels?.length) return null;
+
+      return (
+        <div className="w-32 flex justify-end gap-2">
+          {labels.map((label, index) => (
+            <span
+              key={index}
+              className="px-2 py-0.5 text-xs rounded-full bg-zinc-700"
+            >
+              {label}
+            </span>
+          ))}
+        </div>
+      );
+    },
   },
 ];

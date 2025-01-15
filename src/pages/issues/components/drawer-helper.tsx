@@ -17,6 +17,7 @@ interface DrawerHelperProps {
   children?: React.ReactNode;
   footer?: React.ReactNode;
   submitCallback?: () => void;
+  loading?: boolean;
 }
 
 const DrawerHelper = ({
@@ -26,6 +27,7 @@ const DrawerHelper = ({
   children,
   footer,
   submitCallback,
+  loading,
 }: DrawerHelperProps) => {
   return (
     <Drawer>
@@ -43,6 +45,7 @@ const DrawerHelper = ({
           {footer || (
             <>
               <Button
+                disabled={loading}
                 onClick={
                   submitCallback ||
                   (() => console.log("Submit callback not provided"))

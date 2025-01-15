@@ -6,7 +6,14 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import useRecentlyViewedStore from "@/stores/recently-viewed-store";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -61,25 +68,48 @@ export function DataTable({ columns, data }: DataTableProps) {
     <div>
       <div className="rounded-md cursor-pointer">
         <Table>
+          {/* <TableHeader>
+            <TableRow>
+              {table.getFlatHeaders().map((header) => (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader> */}
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <ContextMenu key={row.id}>
-                  <TableRow
-                    data-state={row.getIsSelected() && "selected"}
-                    onClick={() => navigateToIssueDetail(row.original)}
-                    className="hover:bg-slate-100 dark:hover:bg-zinc-800 cursor-pointer active:scale-[0.99] transition-transform duration-100"
-                  >
-                    <ContextMenuTrigger className="w-full">
+                  <ContextMenuTrigger asChild>
+                    <TableRow
+                      data-state={row.getIsSelected() && "selected"}
+                      onClick={() => navigateToIssueDetail(row.original)}
+                      className="hover:bg-slate-100 dark:hover:bg-zinc-800 cursor-pointer active:scale-[0.99] transition-transform duration-100"
+                    >
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
+                        <TableCell
+                          key={cell.id}
+                          className={
+                            cell.column.id === "labels"
+                              ? "flex justify-end"
+                              : ""
+                          }
+                        >
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()
                           )}
                         </TableCell>
                       ))}
-                    </ContextMenuTrigger>
+                    </TableRow>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent>
                     <ContextMenuContent>
                       {!pinnedIds.includes(String(row.original.id)) &&
                         handlePin && (
@@ -103,7 +133,7 @@ export function DataTable({ columns, data }: DataTableProps) {
                         )}
                       <ContextMenuItem>Hide</ContextMenuItem>
                     </ContextMenuContent>
-                  </TableRow>
+                  </ContextMenuContent>
                 </ContextMenu>
               ))
             ) : (

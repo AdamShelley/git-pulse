@@ -13,7 +13,7 @@ interface IssueProps {
 
 const CommentSection = ({ issue, repo }: IssueProps) => {
   const { username } = useAuthStore();
-  const { editComment, deleteComment } = useComments(
+  const { editComment, deleteComment, isEditing, isDeleting } = useComments(
     username,
     repo,
     issue.number
@@ -54,6 +54,7 @@ const CommentSection = ({ issue, repo }: IssueProps) => {
                   trigger={
                     <Edit className="w-4 h-4 text-gray-400 hover:text-gray-500 transition" />
                   }
+                  loading={isEditing || isDeleting}
                   title="Edit Comment"
                   description="Make changes to your comment"
                   submitCallback={() => editCommentHandler(comment)}
@@ -71,6 +72,7 @@ const CommentSection = ({ issue, repo }: IssueProps) => {
                     <X className="w-4 h-4 text-gray-400 hover:text-gray-500 transition" />
                   }
                   title="Delete Comment"
+                  loading={isEditing || isDeleting}
                   description="This action cannot be undone"
                   submitCallback={() => deleteCommentHandler(comment)}
                 >
