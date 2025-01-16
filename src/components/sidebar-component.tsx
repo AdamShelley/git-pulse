@@ -138,10 +138,10 @@ export function AppSidebar() {
 
   return (
     <>
-      <Sidebar className="border-zinc-700 ">
+      <Sidebar className="dark:border-zinc-700 ">
         <SidebarContent className="p-2">
           <SidebarGroup>
-            <SidebarGroupLabel className="text-zinc-300 text-sm flex items-center justify-between">
+            <SidebarGroupLabel className="dark:text-zinc-300 text-sm flex items-center justify-between">
               {/* TODO: Replace with real icon */}
               <div className="flex ">
                 <LucideGitFork className="w-5 h-5 mr-2" />
@@ -185,7 +185,7 @@ export function AppSidebar() {
                   >
                     <ContextMenu>
                       <ContextMenuTrigger>
-                        <CollapsibleTrigger className="pl-2 flex items-center justify-between w-full select-none text-zinc-400">
+                        <CollapsibleTrigger className="pl-2 flex items-center justify-between w-full select-none dark:text-zinc-400">
                           Recently Viewed
                           <ChevronDown
                             className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180"
@@ -195,7 +195,7 @@ export function AppSidebar() {
                       </ContextMenuTrigger>
                       <ContextMenuContent className="dark">
                         <ContextMenuItem
-                          className="text-xs inset cursor-pointer border-none font-medium text-white font-inter"
+                          className="text-xs inset cursor-pointer border-none font-medium dark:text-white font-inter"
                           onClick={clearViewed}
                         >
                           Clear Recently Viewed

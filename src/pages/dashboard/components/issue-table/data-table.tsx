@@ -68,20 +68,6 @@ export function DataTable({ columns, data }: DataTableProps) {
     <div>
       <div className="rounded-md cursor-pointer">
         <Table>
-          {/* <TableHeader>
-            <TableRow>
-              {table.getFlatHeaders().map((header) => (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader> */}
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
@@ -117,7 +103,7 @@ export function DataTable({ columns, data }: DataTableProps) {
                             className="text-primary"
                             onClick={(e) => handlePin(e, row.original)}
                           >
-                            <Pin className="size-3 mr-2 text-primary-muted" />
+                            <Pin className="size-3 mr-2 dark:text-primary-muted" />
                             Pin
                           </ContextMenuItem>
                         )}
@@ -127,7 +113,7 @@ export function DataTable({ columns, data }: DataTableProps) {
                             className="text-primary"
                             onClick={(e) => handleUnpin(e, row.original)}
                           >
-                            <Pin className="size-3 mr-2 text-primary-muted" />
+                            <Pin className="size-3 mr-2 dark:text-primary-muted" />
                             Unpin
                           </ContextMenuItem>
                         )}

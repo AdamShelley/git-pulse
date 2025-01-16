@@ -1,31 +1,21 @@
-use crate::github::oauth::get_token;
 use std::collections::HashMap;
-use std::sync::Mutex;
 
 use crate::github::get_username;
+use crate::github::oauth::get_token;
 use anthropic::client::Client;
 use anthropic::config::AnthropicConfig;
 use anthropic::types::{ContentBlock, Message, MessagesRequestBuilder, Role};
 use octocrab::Octocrab;
 use serde::{Deserialize, Serialize};
-use tauri::{command, AppHandle, Manager};
+use serde_json::json;
+use tauri::{command, AppHandle};
+use tauri_plugin_store::StoreExt;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct FileRecommendation {
     path: String,
     reason: String,
     confidence: f32,
-}
-#[derive(Debug, Hash, Eq, PartialEq)]
-struct CacheKey {
-    repo_name: String,
-    issue_number: u64,
-}
-
-// Define the state structure
-#[derive(Default)]
-pub struct RecommendationsState {
-    cache: Mutex<HashMap<CacheKey, Vec<FileRecommendation>>>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -34,39 +24,77 @@ pub struct IssueInput {
     issue_number: u64,
 }
 
+#[allow(dead_code)]
+#[derive(Debug, Default)]
+pub struct RecommendationsCache {
+    cache: HashMap<String, Vec<FileRecommendation>>,
+}
+
+impl RecommendationsCache {
+    pub fn get_cache_key(repo_name: &str, issue_number: u64) -> String {
+        format!("{}_{}", repo_name, issue_number)
+    }
+}
+
 #[command]
 pub async fn get_relevant_files(
     app: AppHandle,
     input: IssueInput,
 ) -> Result<Vec<FileRecommendation>, String> {
     // Check cache first
-    // let cache_key = CacheKey {
-    //     repo_name: input.repo_name.clone(),
-    //     issue_number: input.issue_number,
-    // };
+    let store = app
+        .store("recommendations.json")
+        .map_err(|e| format!("Failed to access store: {}", e))?;
 
-    // // Try to get recommendations from cache
-    // if let Some(cached) = app
-    //     .state::<RecommendationsState>()
-    //     .cache
-    //     .lock()
-    //     .map_err(|e| e.to_string())?
-    //     .get(&cache_key)
-    // {
-    //     return Ok(cached.clone());
-    // }
+    let cache_key = format!("{}_{}", input.repo_name, input.issue_number);
+
+    // Try to get from store first
+    if let Some(cached) = store.get(&cache_key) {
+        if let Some(recommendations) = cached.as_array() {
+            let cached_recommendations: Vec<FileRecommendation> = recommendations
+                .iter()
+                .filter_map(|v| serde_json::from_value(v.clone()).ok())
+                .collect();
+            return Ok(cached_recommendations);
+        }
+    }
 
     // If not in cache, proceed with API calls
     let recommendations = fetch_recommendations(app.clone(), input).await?;
 
     // Store in cache
-    // app.state::<RecommendationsState>()
-    //     .cache
-    //     .lock()
-    //     .map_err(|e| e.to_string())?
-    //     .insert(cache_key, recommendations.clone());
+    store.set(&cache_key, json!(recommendations));
+
+    store
+        .save()
+        .map_err(|e| format!("Failed to save token: {}", e))?;
 
     Ok(recommendations)
+}
+
+#[command]
+pub async fn check_file_recommendations_cache(
+    app: AppHandle,
+    repo_name: String,
+    issue_number: u64,
+) -> Result<Option<Vec<FileRecommendation>>, String> {
+    let store = app
+        .store("recommendations.json")
+        .map_err(|e| format!("Failed to access store: {}", e))?;
+
+    let cache_key = format!("{}_{}", repo_name, issue_number);
+
+    if let Some(cached) = store.get(&cache_key) {
+        if let Some(recommendations) = cached.as_array() {
+            let cached_recommendations: Vec<FileRecommendation> = recommendations
+                .iter()
+                .filter_map(|v| serde_json::from_value(v.clone()).ok())
+                .collect();
+            return Ok(Some(cached_recommendations));
+        }
+    }
+
+    Ok(None)
 }
 
 #[command]

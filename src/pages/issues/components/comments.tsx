@@ -26,14 +26,18 @@ const CommentSection = ({ issue, repo }: IssueProps) => {
   const deleteCommentHandler = async (comment: any) => {
     console.log("Delete handler called with comment:", comment);
     try {
-      await deleteComment({ commentId: comment.id });
+      deleteComment({ commentId: comment.id });
     } catch (error) {
       console.error("Error in delete handler:", error);
     }
   };
 
   const editCommentHandler = (comment: any) => {
-    editComment({ commentId: comment.id, body: comment.body });
+    try {
+      editComment({ commentId: comment.id, body: comment.body });
+    } catch (error) {
+      console.error("Error in edit handler:", error);
+    }
   };
 
   return (
@@ -52,7 +56,7 @@ const CommentSection = ({ issue, repo }: IssueProps) => {
               <div className="flex align-end gap-2 absolute top-2 right-2">
                 <DrawerHelper
                   trigger={
-                    <Edit className="w-4 h-4 text-gray-400 hover:text-gray-500 transition" />
+                    <Edit className="w-4 h-4 dark:text-gray-400 hover:text-gray-500 transition" />
                   }
                   loading={isEditing || isDeleting}
                   title="Edit Comment"
@@ -62,7 +66,7 @@ const CommentSection = ({ issue, repo }: IssueProps) => {
                   {/* EDIT FORM */}
                   <div className="p-4">
                     <textarea
-                      className="w-full p-2 bg-zinc-800 text-white border border-zinc-700 rounded"
+                      className="w-full p-2 dark:bg-zinc-800 dark:text-white border dark:border-zinc-700 rounded"
                       defaultValue={comment.body}
                     />
                   </div>
@@ -82,11 +86,13 @@ const CommentSection = ({ issue, repo }: IssueProps) => {
                 </DrawerHelper>
               </div>
             )}
-            <div className="font-medium text-sm mb-1">{comment.author}</div>
-            <div className="mb-4 prose prose-invert max-w-none prose-pre:bg-zinc-800 prose-pre:border prose-pre:border-zinc-700 prose-p:text-white">
+            <div className="font-medium text-sm mb-1 text-zinc-400 dark:text-zinc-200">
+              {comment.author}
+            </div>
+            <div className="mb-4 prose prose-invert max-w-none prose-pre:text-gray-800 prose-pre:bg-zinc-400 prose-pre:border  dark:prose-pre:bg-zinc-800 dark:prose-pre:border dark:prose-pre:border-zinc-700 dark:prose-p:text-white">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
-                className="mb-4 text-sm"
+                className="mb-4 text-sm text-gray-800 dark:text-gray-300"
               >
                 {comment.body || ""}
               </ReactMarkdown>

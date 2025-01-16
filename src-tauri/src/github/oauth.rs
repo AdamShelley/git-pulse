@@ -1,10 +1,7 @@
-use octocrab::models::App;
 use serde::{Deserialize, Serialize};
 use serde_json::{self, json};
-use tauri::{command, AppHandle, State};
-use tauri_plugin_store::{Store, StoreExt};
-
-use super::github_client::get_client;
+use tauri::{command, AppHandle};
+use tauri_plugin_store::StoreExt;
 
 #[derive(Serialize, Deserialize)]
 pub struct DeviceCodeResponse {
@@ -21,7 +18,7 @@ pub struct AuthState {
 }
 
 #[derive(Serialize, Deserialize, Clone)]
-struct UserDetails {
+pub struct UserDetails {
     pub login: String,
     pub avatar_url: String,
 }
@@ -40,7 +37,6 @@ enum TokenOrError {
     Error {
         error: String,
         error_description: Option<String>,
-        interval: Option<u32>,
     },
 }
 
@@ -119,7 +115,6 @@ pub async fn poll_for_token(app: tauri::AppHandle, device_code: String) -> Resul
         TokenOrError::Error {
             error,
             error_description,
-            interval,
         } => {
             if error == "slow_down" {
                 Err("still waiting for authorization".to_string())

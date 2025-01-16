@@ -31,14 +31,17 @@ export const useComments = (
     mutationFn: (values: { commentId: number; body: string }) =>
       invoke<ExtendedIssueData>("edit_issue_comment", {
         repo,
+        commentNumber: values.commentId,
         issueNumber,
-        commentId: values.commentId,
         body: values.body,
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["issue", owner, repo, issueNumber],
-      });
+    onSuccess: (data) => {
+      console.log("Edit successful, updating cache with:", data);
+
+      queryClient.setQueryData(["issue", owner, repo, issueNumber], data);
+    },
+    onError: (error) => {
+      console.error("edit mutation failed:", error);
     },
   });
 

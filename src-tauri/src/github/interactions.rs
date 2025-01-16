@@ -113,3 +113,29 @@ pub async fn delete_issue_comment(
     println!("Comment deleted");
     fetch_single_issue(app, owner.clone(), repo, issue_number, cache).await
 }
+
+#[tauri::command]
+pub async fn edit_issue_comment(
+    app: AppHandle,
+    repo: String,
+    comment_number: i64,
+    issue_number: i64,
+    body: String,
+    cache: State<'_, IssuesCache>,
+) -> Result<IssueData, String> {
+    let token = get_token(&app)?;
+    let owner = get_username(app.clone())?;
+
+    let octocrab = octocrab::OctocrabBuilder::new()
+        .personal_token(token)
+        .build()
+        .map_err(|e| e.to_string())?;
+
+    octocrab
+        .issues(&owner, &repo)
+        .update_comment(octocrab::models::CommentId(comment_number as u64), body)
+        .await
+        .map_err(|e| e.to_string())?;
+
+    fetch_single_issue(app, owner.clone(), repo, issue_number, cache).await
+}

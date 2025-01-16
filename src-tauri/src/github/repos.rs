@@ -2,7 +2,7 @@ use super::github_client::get_client;
 use serde::Serialize;
 use serde_json::json;
 use tauri::{command, AppHandle};
-use tauri_plugin_store::{Store, StoreExt};
+use tauri_plugin_store::StoreExt;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct RepoData {
@@ -18,7 +18,7 @@ pub struct RepoData {
 }
 
 #[command]
-pub async fn fetch_repos(app: AppHandle) -> Result<Vec<RepoData>, String> {
+pub async fn fetch_repos() -> Result<Vec<RepoData>, String> {
     let octocrab = get_client()?;
 
     let mut all_repos = Vec::new();

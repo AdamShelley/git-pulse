@@ -40,15 +40,15 @@ const IssuePage = () => {
                 </div>
                 <p className="text-sm font-semibold">{repo}</p>
               </h2>
-              <div className="text-sm text-gray-500">
+              <div className="text-sm dark:text-gray-500">
                 Opened by {issue.creator} on
                 {new Date(issue.created_at).toLocaleDateString()}
               </div>
             </div>
-            <div className="mt-[70px] pb-10 mb-4 prose prose-invert max-w-none dark:prose-pre:bg-zinc-800 prose-pre:border prose-pre:border-zinc-700">
+            <div className="mt-[70px] pb-10 mb-4 prose prose-invert max-w-none  dark:prose-pre:bg-zinc-800 dark:prose-pre:border dark:prose-pre:border-zinc-700">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
-                className="mb-4 text-sm"
+                className="mb-4 text-sm text-gray-800 dark:text-zinc-200"
               >
                 {issue.body || ""}
               </ReactMarkdown>

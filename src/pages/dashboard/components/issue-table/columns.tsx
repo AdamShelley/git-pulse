@@ -71,7 +71,7 @@ export const columns: ColumnDef<ExtendedIssueData>[] = [
           {labels.map((label, index) => (
             <span
               key={index}
-              className="px-2 py-0.5 text-xs rounded-full bg-zinc-700"
+              className="px-2 py-0.5 text-xs rounded-full dark:bg-zinc-700"
             >
               {label}
             </span>

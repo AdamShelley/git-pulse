@@ -15,6 +15,7 @@ use github::issues::get_cached_issue;
 use github::issues::get_pinned_repos;
 use github::issues::save_pinned_repos;
 use github::issues::IssuesCache;
+
 use std::env;
 
 use github::oauth::get_stored_auth;
@@ -30,6 +31,7 @@ use recents::recents::save_recents;
 
 use github::interactions::add_issue_comment;
 use github::interactions::delete_issue_comment;
+use github::interactions::edit_issue_comment;
 
 use github::oauth::get_username;
 use github::oauth::initiate_device_login;
@@ -40,7 +42,9 @@ use github::repos::fetch_repos;
 use github::repos::get_repos_from_store;
 
 use ais::changelog::generate_and_save_changelog;
+use ais::file_suggestions::check_file_recommendations_cache;
 use ais::file_suggestions::get_relevant_files;
+use ais::file_suggestions::RecommendationsCache;
 
 use tauri_plugin_store::StoreExt;
 
@@ -51,6 +55,7 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::new().build())
         .manage(IssuesCache::default())
+        .manage(RecommendationsCache::default())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
@@ -77,7 +82,9 @@ pub fn run() {
             generate_and_save_changelog,
             get_username,
             get_relevant_files,
-            delete_issue_comment
+            delete_issue_comment,
+            check_file_recommendations_cache,
+            edit_issue_comment
         ])
         .setup(|app| {
             // Initialize the store

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AlertCircle, ChevronDown, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,28 @@ const FileAnalyzer = ({ repoName, issueNumber }: FileAnalyzerProps) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const checkCache = async () => {
+      if (!repoName || !issueNumber) return;
+
+      try {
+        const cached = await invoke("check_file_recommendations_cache", {
+          repoName: repoName,
+          issueNumber: parseInt(String(issueNumber)),
+        });
+
+        if (cached) {
+          setResults(cached as AnalysisResult[]);
+          setIsExpanded(true);
+        }
+      } catch (err) {
+        console.error("Error checking cache:", err);
+      }
+    };
+
+    checkCache();
+  }, [repoName, issueNumber]);
 
   return (
     <div className="w-full mx-auto">
