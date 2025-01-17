@@ -6,14 +6,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import useRecentlyViewedStore from "@/stores/recently-viewed-store";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";

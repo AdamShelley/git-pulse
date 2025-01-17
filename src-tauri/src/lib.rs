@@ -51,6 +51,7 @@ use tauri_plugin_store::StoreExt;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     dotenv().expect("Failed to load .env file");
+    let _ = fix_path_env::fix();
 
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::new().build())

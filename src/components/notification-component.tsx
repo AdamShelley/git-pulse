@@ -1,6 +1,4 @@
-type Props = {};
-
-const Notifications = (props: Props) => {
+const Notifications = () => {
   return (
     <div>
       <p className="text-sm text-muted-foreground">No new notifications</p>

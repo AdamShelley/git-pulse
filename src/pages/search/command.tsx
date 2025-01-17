@@ -10,7 +10,6 @@ import {
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   Settings,
-  File,
   MessageSquare,
   Bookmark,
   AlertCircle,
@@ -34,7 +33,7 @@ const CommandPalette = ({ open, setOpen }: CommandPaletteProps) => {
   const [repos, setRepoNames] = useState<string[]>([]);
   const navigate = useNavigate();
   const { addItem } = useRecentlyViewedStore();
-  const { pinnedIds, setPinnedIds } = usePinnedReposStore();
+  const { pinnedIds } = usePinnedReposStore();
   const { username } = useAuthStore();
 
   const { data } = useFetchIssues({

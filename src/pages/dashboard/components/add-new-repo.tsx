@@ -38,7 +38,7 @@ const formSchema = z.object({
 
 export const AddNewRepoButton = ({ repoName }: AddNewRepoProps) => {
   const addIssue = useAddIssue();
-  const { mutate: refreshIssues, isPending } = useRefreshIssues();
+  const { mutate: _refreshIssues, isPending } = useRefreshIssues();
   const { username } = useAuthStore();
 
   console.log(repoName);

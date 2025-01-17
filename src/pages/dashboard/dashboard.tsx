@@ -8,7 +8,6 @@ import { FolderGit, Loader2, RefreshCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import AnimatedContainer from "@/components/animation-wrapper";
-import { AddNewRepoButton } from "./components/add-new-repo";
 import { useAuthStore } from "@/stores/auth-store";
 
 const IssuesDashboard = () => {

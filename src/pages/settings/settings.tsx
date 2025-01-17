@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { Button } from "@/components/ui/button";
 import { FolderOpen, Github } from "lucide-react";
@@ -40,8 +40,8 @@ const Settings = () => {
   const updateSettings = useSettingsStore((state) => state.updateSettings);
 
   const [isSaving, setIsSaving] = useState(false);
-  const [saveStatus, setSaveStatus] = useState("");
-  const [vaultPath, setVaultPath] = useState("");
+  const [_saveStatus, setSaveStatus] = useState("");
+  const [_vaultPath, setVaultPath] = useState("");
 
   // const loadSettings = async () => {
   //   console.log("Loading settings");

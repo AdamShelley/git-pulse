@@ -1,8 +1,6 @@
 import { useParams } from "react-router-dom";
 
-type Props = {};
-
-const CommentPage = (props: Props) => {
+const CommentPage = () => {
   const state = useParams();
   console.log(state);
   return (
