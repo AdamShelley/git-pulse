@@ -15,6 +15,7 @@ use github::issues::get_cached_issue;
 use github::issues::get_pinned_repos;
 use github::issues::save_pinned_repos;
 use github::issues::IssuesCache;
+use tauri::{AppHandle, Manager};
 
 use std::env;
 
@@ -50,8 +51,17 @@ use tauri_plugin_store::StoreExt;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    dotenv().expect("Failed to load .env file");
-    let _ = fix_path_env::fix();
+    let load_env = |app: &AppHandle| -> Result<(), String> {
+        let resource_path = app
+            .path()
+            .resource_dir()
+            .map_err(|e| format!("Failed to get resource path: {}", e))?
+            .join(".env");
+
+        dotenvy::from_path(&resource_path).map_err(|e| format!("Failed to load .env: {}", e))?;
+
+        Ok(())
+    };
 
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::new().build())
@@ -87,7 +97,8 @@ pub fn run() {
             check_file_recommendations_cache,
             edit_issue_comment
         ])
-        .setup(|app| {
+        .setup(move |app| {
+            load_env(&app.handle())?;
             // Initialize the store
             let _auth_store = app.store("auth.json")?;
             let _repo_store = app.store("repos.json")?;

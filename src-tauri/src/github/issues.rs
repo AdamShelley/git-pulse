@@ -141,7 +141,7 @@ pub async fn fetch_issues(
         .await
     {
         Ok(page) => {
-            println!("Got {} issues", page.items.len());
+            // println!("Got {} issues", page.items.len());
             page
         }
         Err(e) => {
@@ -154,9 +154,9 @@ pub async fn fetch_issues(
     let mut processed_issues: Vec<IssueData> =
         page.items.into_iter().map(IssueData::from).collect();
 
-    println!("Fetching comments for {} issues...", processed_issues.len());
+    // println!("Fetching comments for {} issues...", processed_issues.len());
     for issue in &mut processed_issues {
-        println!("Fetching comments for issue #{}", issue.number);
+        // println!("Fetching comments for issue #{}", issue.number);
         match octocrab
             .issues(&owner, &repo)
             .list_comments(issue.number as u64)
@@ -164,11 +164,11 @@ pub async fn fetch_issues(
             .await
         {
             Ok(comments) => {
-                println!(
-                    "Got {} comments for issue #{}",
-                    comments.items.len(),
-                    issue.number
-                );
+                // println!(
+                //     "Got {} comments for issue #{}",
+                //     comments.items.len(),
+                //     issue.number
+                // );
                 issue.comments = comments
                     .items
                     .into_iter()
