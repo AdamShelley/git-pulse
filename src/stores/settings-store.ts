@@ -7,6 +7,7 @@ interface Settings {
   font_size: string;
   file_directory: string;
   recently_viewed_option: boolean;
+  claudeApiKey: string;
   loadSettings: () => Promise<void>;
   updateSettings: (newSettings: Partial<Settings>) => Promise<void>;
 }
@@ -17,6 +18,7 @@ const useSettingsStore = create<Settings>((set) => ({
   font_size: "",
   file_directory: "",
   recently_viewed_option: false,
+  claudeApiKey: "",
   loadSettings: async () => {
     try {
       const savedSettings = await invoke<Settings>("load_settings");

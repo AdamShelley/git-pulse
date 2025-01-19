@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { Button } from "@/components/ui/button";
-import { FolderOpen, Github } from "lucide-react";
+import { FolderOpen, Github, Inspect } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -29,42 +29,19 @@ interface Settings {
 }
 
 const Settings = () => {
-  // const [settings, setSettings] = useState<Settings>({
-  //   theme: "system",
-  //   notifications: true,
-  //   font_size: "",
-  //   file_directory: "",
-  // });
-
   const settings = useSettingsStore((state) => state);
   const updateSettings = useSettingsStore((state) => state.updateSettings);
 
   const [isSaving, setIsSaving] = useState(false);
   const [_saveStatus, setSaveStatus] = useState("");
   const [_vaultPath, setVaultPath] = useState("");
-
-  // const loadSettings = async () => {
-  //   console.log("Loading settings");
-  //   try {
-  //     const settings = useSettingsStore.getState();
-
-  //     console.log(settings);
-  //     setSettings(settings);
-  //   } catch (error) {
-  //     console.error("Failed to load settings:", error);
-  //   }
-  // };
+  const [_AIKey, setAIKey] = useState("");
 
   const handleChange = async (key: keyof Settings, value: any) => {
     // Update the store directly
     await updateSettings({ [key]: value });
     console.log("New settings after change:", useSettingsStore.getState());
   };
-
-  // const handleChange = async (key: keyof Settings, value: any) => {
-  //   const newSettings = { ...settings, [key]: value };
-  //   setSettings(newSettings);
-  // };
 
   const saveSettings = async (settingsToSave = settings) => {
     setIsSaving(true);
@@ -99,9 +76,7 @@ const Settings = () => {
     } catch (err) {}
   };
 
-  // useEffect(() => {
-  //   loadSettings();
-  // }, []);
+  const setClaudeAPIKey = async () => {};
 
   return (
     <Card className="dark:bg-zinc-900/50 dark:border-zinc-700/50 border-transparent shadow-none ">
@@ -184,6 +159,15 @@ const Settings = () => {
           </Button>
           <label className="font-medium text-sm" htmlFor="vaultPath">
             OAuth Login
+          </label>
+        </div>
+
+        <div className="mt-3 flex items-center justify-end gap-2 w-full">
+          <Button onClick={setClaudeAPIKey} variant="outline" className="">
+            <Inspect className="h-4 w-4" />
+          </Button>
+          <label className="font-medium text-sm" htmlFor="vaultPath">
+            Use your own Claude API Key
           </label>
         </div>
       </CardContent>
