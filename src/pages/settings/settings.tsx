@@ -20,6 +20,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import useSettingsStore from "@/stores/settings-store";
+import { Input } from "@/components/ui/input";
 
 interface Settings {
   theme: string;
@@ -36,6 +37,7 @@ const Settings = () => {
   const [_saveStatus, setSaveStatus] = useState("");
   const [_vaultPath, setVaultPath] = useState("");
   const [_AIKey, setAIKey] = useState("");
+  const [selectAPIKey, setSelectAPIKey] = useState(false);
 
   const handleChange = async (key: keyof Settings, value: any) => {
     // Update the store directly
@@ -76,7 +78,17 @@ const Settings = () => {
     } catch (err) {}
   };
 
-  const setClaudeAPIKey = async () => {};
+  const setClaudeAPIKey = async () => {
+    setSelectAPIKey((prev) => !prev);
+  };
+
+  const setKeyHandler = async (key: string) => {
+    if (selectAPIKey) {
+      await updateSettings({ ...settings, anthropic_api_key: _AIKey });
+
+      // Invoke
+    }
+  };
 
   return (
     <Card className="dark:bg-zinc-900/50 dark:border-zinc-700/50 border-transparent shadow-none ">
@@ -162,13 +174,21 @@ const Settings = () => {
           </label>
         </div>
 
-        <div className="mt-3 flex items-center justify-end gap-2 w-full">
+        <div className="mt-3 flex flex-col items-end justify-end gap-2 w-full">
           <Button onClick={setClaudeAPIKey} variant="outline" className="">
             <Inspect className="h-4 w-4" />
           </Button>
           <label className="font-medium text-sm" htmlFor="vaultPath">
-            Use your own Claude API Key
+            Use your own Anthropic API Key
           </label>
+
+          {selectAPIKey && (
+            <Input
+              type="text"
+              placeholder="Copy your key here to enable AI features"
+              onChange={(e) => setKeyHandler(e.target.value)}
+            />
+          )}
         </div>
       </CardContent>
       <CardFooter className="flex gap-2 items-center justify-center mt-2">
