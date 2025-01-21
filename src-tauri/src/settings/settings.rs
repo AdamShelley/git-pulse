@@ -19,6 +19,8 @@ pub struct Settings {
     pub file_directory: String,
     #[serde(default)]
     pub recently_viewed_option: bool,
+    #[serde(default)]
+    pub api_key: Option<String>,
 }
 
 impl Default for Settings {
@@ -29,6 +31,7 @@ impl Default for Settings {
             font_size: "medium".to_string(),
             file_directory: "".to_string(),
             recently_viewed_option: false,
+            api_key: None,
         }
     }
 }
@@ -72,6 +75,11 @@ pub async fn save_settings(app: AppHandle, settings: Settings) -> Result<(), Str
             settings.file_directory
         },
         recently_viewed_option: settings.recently_viewed_option,
+        api_key: if settings.api_key.is_none() {
+            current_settings.api_key
+        } else {
+            settings.api_key
+        },
     };
 
     let json = serde_json::to_string_pretty(&new_settings)
@@ -91,4 +99,18 @@ fn get_settings_path(app: &AppHandle) -> Result<PathBuf, String> {
         .map_err(|e| format!("Failed to create config directory: {}", e))?;
 
     Ok(config_dir.join("settings.json"))
+}
+
+pub fn get_api_key(app: &AppHandle) -> Result<String, String> {
+    let settings_path = get_settings_path(app)?;
+
+    let settings = match fs::read_to_string(&settings_path) {
+        Ok(data) => serde_json::from_str::<Settings>(&data)
+            .map_err(|e| format!("Failed to parse settings: {}", e))?,
+        Err(_) => return Err("No settings file found".to_string()),
+    };
+
+    settings
+        .api_key
+        .ok_or_else(|| "No API key found".to_string())
 }

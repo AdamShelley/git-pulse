@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use crate::github::get_username;
 use crate::github::oauth::get_token;
+use crate::settings::settings::get_api_key;
 use anthropic::client::Client;
 use anthropic::config::AnthropicConfig;
 use anthropic::types::{ContentBlock, Message, MessagesRequestBuilder, Role};
@@ -136,7 +137,12 @@ pub async fn fetch_recommendations(
         .collect();
 
     // Initialize Claude client
-    let cfg = AnthropicConfig::new().map_err(|e| e.to_string())?;
+    // let cfg = AnthropicConfig::new().map_err(|e| e.to_string())?;
+    // let client = Client::try_from(cfg).map_err(|e| e.to_string())?;
+    let api_key = get_api_key(&app)?;
+    let cfg = AnthropicConfig::new()
+        .with_api_key(api_key)
+        .map_err(|e| e.to_string())?;
     let client = Client::try_from(cfg).map_err(|e| e.to_string())?;
 
     // Create prompt for Claude

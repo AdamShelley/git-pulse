@@ -85,8 +85,6 @@ const Settings = () => {
   const setKeyHandler = async (key: string) => {
     if (selectAPIKey) {
       await updateSettings({ ...settings, anthropic_api_key: _AIKey });
-
-      // Invoke
     }
   };
 
