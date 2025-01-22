@@ -36,7 +36,7 @@ const Settings = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [_saveStatus, setSaveStatus] = useState("");
   const [_vaultPath, setVaultPath] = useState("");
-  const [_AIKey, setAIKey] = useState("");
+  const [_AIKey, setAIKey] = useState<string>(settings.api_key || "");
   const [selectAPIKey, setSelectAPIKey] = useState(false);
 
   const handleChange = async (key: keyof Settings, value: any) => {
@@ -49,10 +49,15 @@ const Settings = () => {
     setIsSaving(true);
     setSaveStatus("Saving...");
 
-    console.log(settingsToSave);
+    const updatedSettings = {
+      ...settingsToSave,
+      showApiInput: true,
+      api_key: _AIKey,
+    };
 
     try {
-      await invoke("save_settings", { settings: settingsToSave });
+      await invoke("save_settings", { settings: updatedSettings });
+      console.log(updatedSettings);
       setSaveStatus("Settings saved successfully");
       toast.success("Settings saved successfully");
       setTimeout(() => setSaveStatus(""), 3000);
@@ -82,10 +87,8 @@ const Settings = () => {
     setSelectAPIKey((prev) => !prev);
   };
 
-  const setKeyHandler = async (key: string) => {
-    if (selectAPIKey) {
-      await updateSettings({ ...settings, anthropic_api_key: _AIKey });
-    }
+  const setKeyHandler = (key: string) => {
+    setAIKey(key);
   };
 
   return (
@@ -177,12 +180,15 @@ const Settings = () => {
             <Inspect className="h-4 w-4" />
           </Button>
           <label className="font-medium text-sm" htmlFor="vaultPath">
-            Use your own Anthropic API Key
+            {settings.api_key
+              ? "API Key Saved"
+              : "Use your own Anthropic API Key"}
           </label>
 
           {selectAPIKey && (
             <Input
               type="text"
+              value={_AIKey}
               placeholder="Copy your key here to enable AI features"
               onChange={(e) => setKeyHandler(e.target.value)}
             />

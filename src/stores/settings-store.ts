@@ -7,7 +7,8 @@ interface Settings {
   font_size: string;
   file_directory: string;
   recently_viewed_option: boolean;
-  anthropic_api_key: string;
+  api_key: string;
+  showApiInput: boolean;
   loadSettings: () => Promise<void>;
   updateSettings: (newSettings: Partial<Settings>) => Promise<void>;
 }
@@ -18,7 +19,8 @@ const useSettingsStore = create<Settings>((set) => ({
   font_size: "",
   file_directory: "",
   recently_viewed_option: false,
-  anthropic_api_key: "",
+  api_key: "",
+  showApiInput: false,
   loadSettings: async () => {
     try {
       const savedSettings = await invoke<Settings>("load_settings");

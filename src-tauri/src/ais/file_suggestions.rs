@@ -140,9 +140,8 @@ pub async fn fetch_recommendations(
     // let cfg = AnthropicConfig::new().map_err(|e| e.to_string())?;
     // let client = Client::try_from(cfg).map_err(|e| e.to_string())?;
     let api_key = get_api_key(&app)?;
-    let cfg = AnthropicConfig::new()
-        .with_api_key(api_key)
-        .map_err(|e| e.to_string())?;
+    let mut cfg = AnthropicConfig::new().map_err(|e| e.to_string())?;
+    cfg.api_key = api_key;
     let client = Client::try_from(cfg).map_err(|e| e.to_string())?;
 
     // Create prompt for Claude
