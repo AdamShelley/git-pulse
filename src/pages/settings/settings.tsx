@@ -21,6 +21,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import useSettingsStore from "@/stores/settings-store";
 import { Input } from "@/components/ui/input";
+import { useAuthStore } from "@/stores/auth-store";
 
 interface Settings {
   theme: string;
@@ -32,6 +33,7 @@ interface Settings {
 const Settings = () => {
   const settings = useSettingsStore((state) => state);
   const updateSettings = useSettingsStore((state) => state.updateSettings);
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
   const [isSaving, setIsSaving] = useState(false);
   const [_saveStatus, setSaveStatus] = useState("");
@@ -166,14 +168,16 @@ const Settings = () => {
           </label>
         </div>
 
-        <div className="mt-3 flex items-center justify-end gap-2 w-full">
-          <Button onClick={selectVaultPath} variant="outline" className="">
-            <Github className="h-4 w-4" />
-          </Button>
-          <label className="font-medium text-sm" htmlFor="vaultPath">
-            OAuth Login
-          </label>
-        </div>
+        {!isLoggedIn && (
+          <div className="mt-3 flex items-center justify-end gap-2 w-full">
+            <Button onClick={selectVaultPath} variant="outline" className="">
+              <Github className="h-4 w-4" />
+            </Button>
+            <label className="font-medium text-sm" htmlFor="vaultPath">
+              OAuth Login
+            </label>
+          </div>
+        )}
 
         <div className="mt-3 flex flex-col items-end justify-end gap-2 w-full">
           <Button onClick={setClaudeAPIKey} variant="outline" className="">

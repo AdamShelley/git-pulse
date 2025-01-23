@@ -22,7 +22,7 @@ const SaveToObsidianButton = ({ issue }: IssueProps) => {
   const [_loading, setLoading] = useState(false);
   const [_success, setSuccess] = useState("");
 
-  const { file_directory: vaultPath } = useSettingsStore();
+  const { file_directory: vaultPath, api_key } = useSettingsStore();
 
   const validateAndFormatIssue = (rawIssue: IssueData) => {
     // Format the issue with correct field names to match Rust struct
@@ -110,18 +110,20 @@ const SaveToObsidianButton = ({ issue }: IssueProps) => {
           </TooltipTrigger>
           <TooltipContent>Save to changelog</TooltipContent>
         </Tooltip>
-        <Tooltip>
-          <TooltipTrigger>
-            <Button
-              onClick={generateChangelog}
-              disabled={issues.length === 0 || !vaultPath}
-              className="flex-1 mr-2"
-            >
-              <Download className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Summarise for changelog</TooltipContent>
-        </Tooltip>
+        {api_key && (
+          <Tooltip>
+            <TooltipTrigger>
+              <Button
+                onClick={generateChangelog}
+                disabled={issues.length === 0 || !vaultPath}
+                className="flex-1 mr-2"
+              >
+                <Download className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Summarise for changelog</TooltipContent>
+          </Tooltip>
+        )}
       </TooltipProvider>
     </div>
   );

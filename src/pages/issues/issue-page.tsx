@@ -10,6 +10,7 @@ import CommentSection from "./components/comments";
 import { useIssue } from "@/hooks/use-issue";
 import AnimatedContainer from "@/components/animation-wrapper";
 import FileAnalyzer from "./components/file-analyzer";
+import useSettingsStore from "@/stores/settings-store";
 
 const IssuePage = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,6 +19,7 @@ const IssuePage = () => {
 
   const { owner, repo, issueNumber } = extractIssueDetails(id);
   const { data: issue, isLoading, error } = useIssue(owner, repo, issueNumber);
+  const apiKey = useSettingsStore((state) => state.api_key);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading issue</div>;
@@ -54,7 +56,9 @@ const IssuePage = () => {
               </ReactMarkdown>
               <div className="mb-4 mt-10">
                 <SaveToObsidianButton issue={issue} />
-                <FileAnalyzer repoName={repo} issueNumber={issueNumber} />
+                {apiKey && (
+                  <FileAnalyzer repoName={repo} issueNumber={issueNumber} />
+                )}
               </div>
               <CommentSection issue={issue} repo={repo} />
               <AddCommentForm

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Bell, User } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
-import Notifications from "./notification-component";
 
 const Toolbar = () => {
   const [headerTitle, setHeaderTitle] = useState("Git Pulse");
@@ -36,7 +35,7 @@ const Toolbar = () => {
         <HeaderText title={headerTitle} />
       </div>
       <div className="space-x-2">
-        <Popover>
+        {/* <Popover>
           <PopoverTrigger asChild>
             <Button variant="ghost" size="icon" className="h-8 w-8">
               <Bell className="h-4 w-4" />
@@ -49,7 +48,7 @@ const Toolbar = () => {
               <Notifications />
             </div>
           </PopoverContent>
-        </Popover>
+        </Popover>*/}
 
         <Popover>
           <PopoverTrigger asChild>
