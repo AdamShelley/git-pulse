@@ -184,7 +184,7 @@ export function AppSidebar() {
                     className="group/collapsible"
                   >
                     <ContextMenu>
-                      <ContextMenuTrigger>
+                      <ContextMenuTrigger data-shadcn-contextmenu>
                         <CollapsibleTrigger className="pl-2 flex items-center justify-between w-full select-none dark:text-zinc-400">
                           Recently Viewed
                           <ChevronDown

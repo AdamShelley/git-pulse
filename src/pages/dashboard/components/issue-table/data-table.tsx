@@ -65,7 +65,7 @@ export function DataTable({ columns, data }: DataTableProps) {
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <ContextMenu key={row.id}>
-                  <ContextMenuTrigger asChild>
+                  <ContextMenuTrigger asChild data-shadcn-contextmenu>
                     <TableRow
                       data-state={row.getIsSelected() && "selected"}
                       onClick={() => navigateToIssueDetail(row.original)}

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::fs;
-use tauri::Manager;
+use tauri::{Manager, WindowEvent};
 
 #[derive(Serialize, Deserialize, Debug)]
 struct WindowPosition {
@@ -74,6 +74,17 @@ pub fn setup_window_management(app: &tauri::App) -> Result<(), Box<dyn std::erro
     let window = app.get_webview_window("main").unwrap();
 
     restore_window_position(&window);
+
+    window.eval(
+        r#"
+        window.addEventListener('contextmenu', (e) => {
+            if (!e.target.closest('[data-shadcn-contextmenu]')) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        }, true);
+    "#,
+    )?;
 
     let window_clone = window.clone();
     window.on_window_event(move |event| match event {
