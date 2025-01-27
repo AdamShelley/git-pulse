@@ -6,6 +6,7 @@ import { FolderOpen, Github, Inspect } from "lucide-react";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -22,6 +23,8 @@ import { toast } from "sonner";
 import useSettingsStore from "@/stores/settings-store";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/stores/auth-store";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Settings {
   theme: string;
@@ -94,120 +97,149 @@ const Settings = () => {
   };
 
   return (
-    <Card className="dark:bg-zinc-900/50 dark:border-zinc-700/50 border-transparent shadow-none ">
+    <Card className="max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="flex text-md font-medium items-center gap-2 m-0">
-          Settings
-        </CardTitle>
+        <CardTitle>Settings</CardTitle>
+        <CardDescription>
+          Manage your application preferences and connections.
+        </CardDescription>
       </CardHeader>
-      <CardContent className="p-3 space-y-8">
-        <div className="flex flex-col">
-          <label className="text-sm font-medium mb-2">Theme</label>
-          <Select
-            onValueChange={(e) => handleChange("theme", e)}
-            value={settings.theme || "System"}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Theme" />
-            </SelectTrigger>
-            <SelectContent className="font-inter dark text-white">
-              <SelectItem value="light">Light</SelectItem>
-              <SelectItem value="dark">Dark</SelectItem>
-              <SelectItem value="system">System</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      <CardContent className="space-y-6">
+        <Tabs defaultValue="appearance" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="appearance">Appearance</TabsTrigger>
+            <TabsTrigger value="connections">Connections</TabsTrigger>
+            <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          </TabsList>
 
-        <div className="flex flex-col gap-2">
-          <label className="font-medium text-sm">Font Size</label>
-          <Select
-            onValueChange={(e) => handleChange("font_size", e)}
-            value={settings.font_size || "Medium"}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Font Size" />
-            </SelectTrigger>
-            <SelectContent className="font-inter dark text-white">
-              <SelectItem value="small">Small</SelectItem>
-              <SelectItem value="medium">Medium</SelectItem>
-              <SelectItem value="large">Large</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+          <TabsContent value="appearance" className="space-y-4">
+            <div className="space-y-4 pt-4">
+              <div className="grid grid-cols-2 items-center gap-4">
+                <label className="text-sm font-medium">Theme</label>
+                <Select
+                  onValueChange={(e) => handleChange("theme", e)}
+                  value={settings.theme || "system"}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select theme" />
+                  </SelectTrigger>
+                  <SelectContent className="font-inter">
+                    <SelectItem value="light">Light</SelectItem>
+                    <SelectItem value="dark">Dark</SelectItem>
+                    <SelectItem value="system">System</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-        <div className="mt-3 flex items-center justify-end gap-2 w-full">
-          <Checkbox
-            id="notifications"
-            checked={settings.notifications}
-            onCheckedChange={(checked) =>
-              handleChange("notifications", checked)
-            }
-          />
-          <div className="grid gap-1.5 leading-none">
-            <label
-              htmlFor="notifications"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Turn on notifications
-            </label>
-          </div>
-        </div>
+              <div className="grid grid-cols-2 items-center gap-4">
+                <label className="text-sm font-medium">Font Size</label>
+                <Select
+                  onValueChange={(e) => handleChange("font_size", e)}
+                  value={settings.font_size || "medium"}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select size" />
+                  </SelectTrigger>
+                  <SelectContent className="font-inter">
+                    <SelectItem value="small">Small</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="large">Large</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </TabsContent>
 
-        <div className="mt-3 flex items-center justify-end gap-2 w-full">
-          <Button onClick={selectVaultPath} variant="outline" className="">
-            <FolderOpen className="h-4 w-4" />
+          <TabsContent value="connections" className="space-y-4">
+            <div className="space-y-4 pt-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <h4 className="text-sm font-medium">Obsidian Vault</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {settings.file_directory || "No vault selected"}
+                  </p>
+                </div>
+                <Button onClick={selectVaultPath} variant="outline" size="sm">
+                  <FolderOpen className="h-4 w-4 mr-2" />
+                  Select Path
+                </Button>
+              </div>
+
+              <Separator />
+
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <h4 className="text-sm font-medium">Anthropic API</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {settings.api_key ? "API Key configured" : "No API key set"}
+                  </p>
+                </div>
+                <Button onClick={setClaudeAPIKey} variant="outline" size="sm">
+                  <Inspect className="h-4 w-4 mr-2" />
+                  Configure API
+                </Button>
+              </div>
+              {selectAPIKey && (
+                <Input
+                  type="password"
+                  value={_AIKey}
+                  placeholder="Enter your Anthropic API key"
+                  onChange={(e) => setKeyHandler(e.target.value)}
+                />
+              )}
+
+              {!isLoggedIn && (
+                <>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-medium">GitHub Account</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Connect your GitHub account
+                      </p>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      <Github className="h-4 w-4 mr-2" />
+                      Connect
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="notifications" className="space-y-4">
+            <div className="space-y-4 pt-4">
+              <div className="flex flex-row items-center justify-end space-x-5">
+                <Checkbox
+                  id="notifications"
+                  checked={settings.notifications}
+                  onCheckedChange={(checked) =>
+                    handleChange("notifications", checked)
+                  }
+                />
+                <div className="">
+                  <label
+                    htmlFor="notifications"
+                    className="text-sm font-medium leading-none"
+                  >
+                    Enable Notifications
+                  </label>
+                  <p className="text-sm text-muted-foreground">
+                    Receive notifications about updates and important changes
+                  </p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+
+        <div className="flex justify-end pt-4">
+          <Button onClick={() => saveSettings()} disabled={isSaving}>
+            {isSaving ? "Saving..." : "Save Changes"}
           </Button>
-          <label
-            className="font-medium text-sm flex flex-col"
-            htmlFor="vaultPath"
-          >
-            Select Obsidian vault path
-            <span className="text-zinc-400">
-              Currently selected path: {settings.file_directory}
-            </span>
-          </label>
-        </div>
-
-        {!isLoggedIn && (
-          <div className="mt-3 flex items-center justify-end gap-2 w-full">
-            <Button onClick={selectVaultPath} variant="outline" className="">
-              <Github className="h-4 w-4" />
-            </Button>
-            <label className="font-medium text-sm" htmlFor="vaultPath">
-              OAuth Login
-            </label>
-          </div>
-        )}
-
-        <div className="mt-3 flex flex-col items-end justify-end gap-2 w-full">
-          <Button onClick={setClaudeAPIKey} variant="outline" className="">
-            <Inspect className="h-4 w-4" />
-          </Button>
-          <label className="font-medium text-sm" htmlFor="vaultPath">
-            {settings.api_key
-              ? "API Key Saved"
-              : "Use your own Anthropic API Key"}
-          </label>
-
-          {selectAPIKey && (
-            <Input
-              type="text"
-              value={_AIKey}
-              placeholder="Copy your key here to enable AI features"
-              onChange={(e) => setKeyHandler(e.target.value)}
-            />
-          )}
         </div>
       </CardContent>
-      <CardFooter className="flex gap-2 items-center justify-center mt-2">
-        <Button
-          onClick={() => saveSettings()}
-          disabled={isSaving}
-          className="px-4 py-2 rounded disabled:opacity-50"
-        >
-          {isSaving ? "Saving..." : "Save Settings"}
-        </Button>
-      </CardFooter>
     </Card>
   );
 };
