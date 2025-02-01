@@ -47,7 +47,6 @@ _Detailed issue view with comment management_
 
 > ⚠️ Project is currently Work in Progress
 
-Stay tuned for installation instructions and releases.
 
 ## Development
 
@@ -81,9 +80,6 @@ npm install
 npm run tauri dev
 ```
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Helpful Resources
 
@@ -91,6 +87,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 - [Rust Documentation](https://www.rust-lang.org/)
 - [Claude AI](https://claude.ai/)
 
-## License
-
-[MIT License](LICENSE)
